@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Aktivitas Interaktif — Robo Kebun</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#ffd9a0;--sky-bottom:#fff3da;
+    --soil:#7a4a2b;--soil-dark:#5e3620;
+    --card:#fffaf0;--ink:#3a2f2a;--ink-soft:#7a6a5c;
+    --c-merah:#e2555f;--c-merah-dark:#b93b46;
+    --c-kuning:#f4c548;--c-kuning-dark:#cf9e1f;
+    --c-biru:#4a9fc9;--c-biru-dark:#2f7796;
+    --c-hijau:#5ba64a;--c-hijau-dark:#3f7d34;
+    --c-ungu:#9b72cf;--c-ungu-dark:#7550a8;
+    --c-oranye:#e88a3c;--c-oranye-dark:#bf6a26;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Quicksand',sans-serif;color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 55%);min-height:100vh;}
+  h1,h2,h3{font-family:'Fredoka',sans-serif;}
+  button{font-family:inherit;}
+
+  .header{text-align:center;padding:22px 16px 6px;}
+  .eyebrow{display:inline-block;background:var(--c-oranye);color:#fff;font-weight:700;font-size:12px;
+    letter-spacing:.04em;padding:5px 14px;border-radius:20px;box-shadow:0 3px 0 var(--c-oranye-dark);margin-bottom:10px;}
+  .header h1{margin:0;font-size:28px;color:var(--soil-dark);}
+  .header p{margin:6px auto 0;color:var(--ink-soft);font-weight:600;font-size:13.5px;max-width:480px;}
+
+  .tabs{display:flex;justify-content:center;gap:8px;padding:16px 10px 4px;flex-wrap:wrap;max-width:720px;margin:0 auto;}
+  .tab-btn{border:3px solid var(--soil);background:var(--card);color:var(--soil-dark);font-weight:700;
+    font-size:12.5px;padding:9px 12px;border-radius:14px;cursor:pointer;box-shadow:0 3px 0 var(--soil);}
+  .tab-btn.active{background:var(--c-oranye);color:#fff;border-color:var(--c-oranye-dark);box-shadow:0 3px 0 var(--c-oranye-dark);}
+  .tab-btn .chk{display:none;}
+  .tab-btn.done .chk{display:inline;}
+
+  .stage{max-width:640px;margin:14px auto 40px;padding:0 16px;}
+  .card{background:var(--card);border:4px solid var(--soil);border-radius:22px;padding:20px 18px;
+    box-shadow:0 8px 0 rgba(0,0,0,.08);}
+  .card h2{margin:0 0 4px;font-size:18px;color:var(--soil-dark);text-align:center;}
+  .card p.instr{margin:0 0 16px;color:var(--ink-soft);font-weight:600;font-size:13px;text-align:center;}
+
+  .round-row{display:flex;justify-content:center;gap:6px;margin-bottom:14px;}
+  .round-dot{width:10px;height:10px;border-radius:50%;background:#e0cda0;}
+  .round-dot.active{background:var(--c-oranye);}
+  .round-dot.done{background:var(--c-hijau);}
+
+  /* Kode Baris: sequencing */
+  .step-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+  .step-item{background:#fff;border:3px solid #e0cda0;border-radius:14px;padding:10px 14px;font-weight:700;
+    font-size:14px;cursor:pointer;display:flex;align-items:center;gap:10px;}
+  .step-item .num{width:24px;height:24px;border-radius:50%;background:#e0cda0;color:#fff;font-size:12px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .step-item.picked{border-color:var(--c-hijau);background:#f0faec;}
+  .step-item.picked .num{background:var(--c-hijau);}
+  .step-item.wrong{animation:shake .35s;border-color:var(--c-merah);}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+
+  /* Warna Angka */
+  .legend{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;
+    background:#f6ecd9;border:3px dashed #e0cda0;border-radius:14px;padding:10px;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;}
+  .dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;}
+  .num-row{display:flex;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .num-chip{width:34px;height:34px;border-radius:10px;background:#fff;border:3px solid var(--soil);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--soil-dark);}
+  .swatch-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+  .swatch{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;}
+  .swatch.used{opacity:.35;pointer-events:none;}
+  .answer-row{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap;min-height:34px;}
+  .answer-dot{width:26px;height:26px;border-radius:50%;}
+
+  /* Cari Bug */
+  .bug-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;}
+  .bug-chip{padding:8px 12px;border-radius:12px;background:#fff;border:3px solid var(--soil);font-weight:700;
+    font-size:14px;cursor:pointer;}
+  .bug-chip.removed{opacity:.3;text-decoration:line-through;}
+  .bug-map{text-align:center;font-size:13px;color:var(--ink-soft);font-weight:600;margin-bottom:14px;}
+
+  /* Aturan Ajaib */
+  .rule-box{background:#fdf0d8;border:3px dashed var(--c-oranye);border-radius:14px;padding:10px 14px;
+    text-align:center;font-weight:700;font-size:13.5px;color:var(--c-oranye-dark);margin-bottom:14px;}
+  .box-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+  .magic-box{aspect-ratio:1;border-radius:14px;display:flex;align-items:center;justify-content:center;
+    font-size:24px;cursor:pointer;border:3px solid transparent;}
+  .magic-box.picked{border-color:var(--soil-dark);transform:scale(0.94);}
+
+  /* Angka Warna (kebalikan Warna Angka) */
+  .color-row{display:flex;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .color-circle{width:34px;height:34px;border-radius:50%;flex-shrink:0;transition:opacity .15s;}
+  .numsel-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+  .numsel-btn{width:42px;height:42px;border-radius:12px;border:3px solid var(--soil);background:#fff;
+    font-weight:700;font-size:16px;color:var(--soil-dark);cursor:pointer;box-shadow:0 3px 0 var(--soil);}
+  .numsel-btn:active{transform:translateY(2px);box-shadow:none;}
+  .answer-row-num{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap;min-height:34px;}
+  .answer-num-chip{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    font-weight:700;color:#fff;font-size:13px;flex-shrink:0;}
+
+  /* Tanda Gerak */
+  .pose-legend{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;background:#f6ecd9;
+    border:3px dashed #e0cda0;border-radius:14px;padding:10px;margin-bottom:14px;}
+  .pose-legend-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:22px;}
+  .pose-legend-item .symbol{font-size:15px;}
+  .pose-row{display:flex;justify-content:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;font-size:28px;}
+  .pose-cell{opacity:1;transition:opacity .15s;}
+  .pose-cell.done{opacity:.3;}
+  .symbol-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+  .symbol-btn{width:44px;height:44px;border-radius:12px;border:3px solid var(--soil);background:#fff;
+    font-size:18px;cursor:pointer;box-shadow:0 3px 0 var(--soil);}
+  .symbol-btn:active{transform:translateY(2px);box-shadow:none;}
+
+  /* Sambung Titik */
+  .dot-svg-wrap{display:flex;justify-content:center;margin-bottom:8px;}
+
+  /* Warna Piksel */
+  .legend-swatch-row{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:12px;
+    background:#f6ecd9;border:3px dashed #e0cda0;border-radius:14px;padding:10px;}
+  .legend-swatch{display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:700;font-size:12px;color:var(--ink-soft);}
+  .legend-swatch .sw{width:26px;height:26px;border-radius:7px;}
+  .color-pick-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .color-pick{width:36px;height:36px;border-radius:50%;border:3px solid transparent;cursor:pointer;padding:0;}
+  .color-pick.selected{border-color:var(--soil-dark);transform:scale(1.12);}
+  .pixel-grid{display:grid;gap:3px;justify-content:center;margin-bottom:6px;}
+  .pixel-cell{width:28px;height:28px;border-radius:6px;background:#f0e6cf;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#a4906c;}
+  .pixel-cell.locked{cursor:default;background:transparent;}
+  .pixel-cell.wrong{animation:shake .3s;}
+
+  /* Kode Warna */
+  .kw-order-row{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+  .kw-chip{padding:6px 12px;border-radius:10px;color:#fff;font-weight:700;font-size:12px;box-shadow:0 3px 0 rgba(0,0,0,.15);}
+
+  /* Sambung Pasangan */
+  .sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:10px;max-width:480px;margin:0 auto 4px;}
+  .sp-item{background:#fff;border:3px solid #e0cda0;border-radius:12px;padding:12px 8px;font-weight:700;
+    font-size:20px;cursor:pointer;text-align:center;}
+  .sp-item.selected{border-color:var(--c-oranye);background:#fdf0d8;}
+  .sp-item.matched{opacity:.3;pointer-events:none;border-color:var(--c-hijau);background:#f0faec;}
+  .sp-item.wrong{animation:shake .3s;border-color:var(--c-merah);}
+
+  /* Ayo Membuat Kode */
+  .bk-grids{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+  .bk-col{text-align:center;}
+  .bk-label{font-weight:700;font-size:12px;color:var(--ink-soft);margin-bottom:6px;}
+  .bk-grid{display:grid;gap:4px;}
+  .bk-cell{width:28px;height:28px;border-radius:7px;background:#fff;border:2px solid #e0cda0;}
+  .bk-cell.target{cursor:pointer;}
+  .bk-palette-row{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;}
+  .bk-swatch{width:32px;height:32px;border-radius:8px;border:3px solid transparent;cursor:pointer;padding:0;}
+  .bk-swatch.selected{border-color:var(--soil-dark);transform:scale(1.12);}
+  .bk-swatch.kosong{background:#fff;border:2px dashed #cbb98c;display:flex;align-items:center;justify-content:center;
+    font-size:12px;color:#cbb98c;font-weight:700;}
+
+  /* Labirin */
+  .lab-grid-wrap{display:flex;justify-content:center;margin-bottom:14px;}
+  .lab-grid{display:grid;gap:4px;background:#e7d9b6;border:3px dashed #cbb98c;border-radius:14px;padding:8px;}
+  .lab-cell{width:34px;height:34px;background:var(--c-hijau);opacity:.55;border-radius:8px;display:flex;
+    align-items:center;justify-content:center;font-size:16px;}
+  .lab-cell.obstacle{background:#c9b48a;opacity:1;}
+  .lab-cell.goal{background:#a9dc95;opacity:1;}
+  .lab-cell.robot{opacity:1;}
+  .lab-seq-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:34px;
+    background:#f6ecd9;border:3px dashed #e0cda0;border-radius:14px;padding:8px;margin-bottom:14px;}
+  .lab-seq-chip{width:28px;height:28px;border-radius:8px;background:var(--c-biru);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .lab-dpad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,44px);gap:6px;
+    justify-content:center;margin:0 auto 12px;}
+  .lab-dbtn{border:none;border-radius:10px;font-size:18px;cursor:pointer;color:#fff;
+    background:var(--c-biru);box-shadow:0 4px 0 var(--c-biru-dark);}
+  .lab-dbtn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--c-biru-dark);}
+  .lab-dbtn.up{grid-column:2;grid-row:1;}
+  .lab-dbtn.left{grid-column:1;grid-row:2;}
+  .lab-dbtn.down{grid-column:2;grid-row:2;}
+  .lab-dbtn.right{grid-column:3;grid-row:2;}
+  .lab-undo-btn{display:block;margin:0 auto;background:#eee2c9;color:var(--soil-dark);border:none;
+    padding:10px 16px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 0 #cdbb8f;}
+
+  .card-foot{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+  .btn-check{background:linear-gradient(180deg,#8fe08f,var(--c-hijau));color:#fff;border:none;
+    padding:12px 26px;border-radius:16px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 0 var(--c-hijau-dark);}
+  .btn-reset{background:#eee2c9;color:var(--soil-dark);border:none;padding:12px 18px;
+    border-radius:16px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 0 #cdbb8f;}
+
+  .message{margin-top:14px;padding:12px 14px;border-radius:14px;font-weight:700;font-size:14px;text-align:center;display:none;}
+  .message.show{display:block;}
+  .message.win{background:#e3f5df;color:var(--c-hijau-dark);}
+  .message.fail{background:#fbe1e1;color:var(--c-merah-dark);}
+  .message.hint{background:#fdf0d8;color:var(--c-oranye-dark);}
+
+  .footnote{text-align:center;color:var(--ink-soft);font-size:12px;font-weight:600;padding:6px 16px 30px;}
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="eyebrow">🎲 CODING UNPLUGGED</div>
+    <h1>Aktivitas Interaktif</h1>
+    <p>Dua belas permainan singkat buat melatih cara berpikir programmer: urutan, penerjemahan, cari kesalahan, aturan logika, angka-warna, tanda gerak, sambung titik, piksel warna, kode warna, sambung pasangan, membuat kode, dan labirin.</p>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="stage">
+    <div class="card">
+      <h2 id="cardTitle"></h2>
+      <p class="instr" id="cardInstr"></p>
+      <div class="round-row" id="roundRow"></div>
+      <div id="gameArea"></div>
+      <div class="card-foot">
+        <button class="btn-check" id="btnCheck">✅ Periksa</button>
+        <button class="btn-reset" id="btnReset">↺ Ulangi</button>
+      </div>
+      <div class="message" id="message"></div>
+    </div>
+  </div>
+
+  <div class="footnote">© 2026 DEE 4 MEREMBU • All Rights Reserved.</div>
+
+<script>
+  /* ================= DATA ================= */
+  const GAMES = ['kodebaris','warnaangka','caribug','aturanajaib','angkawarna','tandagerak','sambungtitik','warnapixel','kodewarna','sambungpasangan','buatkode','labirin'];
+  const GAME_META = {
+    kodebaris:{ title:'📝 Kode Baris', instr:'Ketuk langkah-langkahnya berurutan dari yang pertama dilakukan.' },
+    warnaangka:{ title:'🎨 Warna Angka', instr:'Lihat kunci warnanya, lalu ketuk warna sesuai urutan angka di soal.' },
+    caribug:{ title:'🐛 Cari Bug', instr:'Ada satu perintah yang salah (bug) dalam urutan ini. Ketuk buat menghapusnya.' },
+    aturanajaib:{ title:'✨ Aturan Ajaib', instr:'Baca aturannya, lalu ketuk hanya kotak yang sesuai aturan.' },
+    angkawarna:{ title:'🔢 Angka Warna', instr:'Lihat kunci warnanya, lalu ketuk angka sesuai urutan warna di soal.' },
+    tandagerak:{ title:'🚶 Tanda Gerak', instr:'Lihat kunci gerakannya, lalu ketuk tanda sesuai urutan gerakan di soal.' },
+    sambungtitik:{ title:'🔗 Sambung Titik', instr:'Ketuk titik-titik sesuai urutan angka yang diberikan buat menyambungkan garisnya.' },
+    warnapixel:{ title:'🖍️ Warna Piksel', instr:'Pilih warna sesuai kunci, lalu ketuk kotak berangka yang cocok buat mewarnainya.' },
+    kodewarna:{ title:'🎁 Kode Warna', instr:'Ingat-ingat urutan nama warnanya, lalu ketuk titik warna yang sesuai satu per satu.' },
+    sambungpasangan:{ title:'💞 Sambung Pasangan', instr:'Ketuk dua kartu yang menurutmu berpasangan, sampai semua kartu tersambung.' },
+    buatkode:{ title:'🧮 Ayo Membuat Kode', instr:'Contoh polanya ada di kiri. Pilih warna di palet, lalu ketuk kotak di kanan buat menirunya persis sama.' },
+    labirin:{ title:'🌀 Labirin', instr:'Susun dulu urutan panahnya sampai lengkap, baru tekan Jalankan buat menuntun robot ke bendera.' }
+  };
+
+  const KODEBARIS_ROUNDS = [
+    { steps:['Gali lubang kecil di tanah','Taruh biji ke dalam lubang','Tutup lubang dengan tanah','Siram dengan air'] },
+    { steps:['Ambil ember kosong','Isi ember dengan air','Siram air ke tanaman','Taruh ember kembali'] },
+    { steps:['Petik buah yang matang','Masukkan ke keranjang','Bawa keranjang ke rumah','Cuci buahnya bersih'] },
+    { steps:['Bangun pagi','Cuci muka','Pakai seragam','Sarapan dulu'] },
+    { steps:['Ambil sapu','Sapu halaman','Kumpulkan sampahnya','Buang ke tempat sampah'] },
+    { steps:['Potong rumput liar','Kumpulkan rumputnya','Masukkan ke karung','Bawa ke tempat kompos'] },
+    { steps:['Ambil pot kosong','Isi tanah gembur','Buat lubang kecil','Tanam bibitnya','Siram airnya'] },
+    { steps:['Cuci tangan dulu','Ambil piring','Ambil sendok','Ambil makanan','Makan bersama'] },
+    { steps:['Buka pintu kandang','Beri makan ayam','Beri minum ayam','Ambil telurnya','Tutup lagi kandangnya'] },
+    { steps:['Siapkan tas sekolah','Masukkan buku','Masukkan alat tulis','Pakai sepatu','Berangkat ke sekolah'] }
+  ];
+
+  const COLORS = [
+    {n:1,name:'Merah',hex:'#e2555f'},{n:2,name:'Kuning',hex:'#f4c548'},
+    {n:3,name:'Biru',hex:'#4a9fc9'},{n:4,name:'Hijau',hex:'#5ba64a'}
+  ];
+  const WARNAANGKA_ROUNDS = [ [1,2,3], [2,3,1,4], [4,1,3,2,1] ];
+
+  const CARIBUG_ROUNDS = [
+    { start:'(0,0)', goal:'(0,2) — 2 langkah ke kanan', seq:['➡️ kanan','⬇️ bawah','➡️ kanan'], bugIndex:1 },
+    { start:'(0,0)', goal:'(2,0) — 2 langkah ke bawah', seq:['⬇️ bawah','⬇️ bawah','➡️ kanan'], bugIndex:2 },
+    { start:'(0,0)', goal:'(1,1) — 1 kanan, 1 bawah', seq:['➡️ kanan','➡️ kanan','⬇️ bawah'], bugIndex:1 }
+  ];
+
+  const ATURAN_ROUNDS = [
+    { rule:'Ambil hanya kotak berwarna MERAH', items:[
+        {emoji:'🔴',color:'merah'},{emoji:'🟡',color:'kuning'},{emoji:'🔴',color:'merah'},
+        {emoji:'🔵',color:'biru'},{emoji:'🟢',color:'hijau'},{emoji:'🔴',color:'merah'},
+        {emoji:'🟡',color:'kuning'},{emoji:'🔵',color:'biru'} ],
+      correctColor:'merah' },
+    { rule:'Ambil hanya BINTANG (bentuk, warna apa saja)', items:[
+        {emoji:'⭐',shape:'bintang'},{emoji:'🔺',shape:'segitiga'},{emoji:'⭐',shape:'bintang'},
+        {emoji:'⬛',shape:'kotak'},{emoji:'⭐',shape:'bintang'},{emoji:'🔺',shape:'segitiga'},
+        {emoji:'⬛',shape:'kotak'},{emoji:'⭐',shape:'bintang'} ],
+      correctShape:'bintang' },
+    { rule:'Ambil kotak KUNING dan berbentuk BULAT', items:[
+        {emoji:'🟡',color:'kuning',shape:'bulat'},{emoji:'🟨',color:'kuning',shape:'kotak'},
+        {emoji:'🟡',color:'kuning',shape:'bulat'},{emoji:'🔴',color:'merah',shape:'bulat'},
+        {emoji:'🟨',color:'kuning',shape:'kotak'},{emoji:'🟡',color:'kuning',shape:'bulat'},
+        {emoji:'🟢',color:'hijau',shape:'bulat'},{emoji:'🔴',color:'merah',shape:'bulat'} ],
+      correctColor:'kuning', correctShape:'bulat' }
+  ];
+
+  /* ===== Angka Warna (kebalikan Warna Angka): soal = warna, jawaban = angka ===== */
+  const AW_COLORS = [
+    {n:1,name:'Merah',hex:'#e2555f'},{n:2,name:'Kuning',hex:'#f4c548'},{n:3,name:'Hijau',hex:'#5ba64a'},
+    {n:4,name:'Biru',hex:'#4a9fc9'},{n:5,name:'Ungu',hex:'#9b72cf'}
+  ];
+  const ANGKAWARNA_ROUNDS = [ [1,5,2,3,4], [3,1,4,5,2], [5,2,1,4,3] ];
+
+  /* ===== Tanda Gerak: soal = gerakan (emoji pose), jawaban = tanda ===== */
+  const POSE_LEGEND = [
+    {key:'a',emoji:'🧍',symbol:'➖'},{key:'b',emoji:'🤸',symbol:'✖️'},{key:'c',emoji:'🙆',symbol:'➕'},
+    {key:'d',emoji:'🕺',symbol:'➗'},{key:'e',emoji:'🚶',symbol:'⭕'}
+  ];
+  const TANDAGERAK_ROUNDS = [ ['a','c','b','e','d'], ['e','b','d','a','c'], ['d','e','a','c','b'] ];
+
+  /* ===== Sambung Titik: ketuk titik sesuai urutan angka ===== */
+  const DOT_POS = [
+    {n:1,x:120,y:22,hex:'#5ba64a'}, {n:2,x:210,y:88,hex:'#9b72cf'}, {n:3,x:175,y:195,hex:'#f4c548'},
+    {n:4,x:65,y:195,hex:'#e2555f'}, {n:5,x:30,y:88,hex:'#f28bbf'}
+  ];
+  const SAMBUNGTITIK_ROUNDS = [
+    { order:[1,2,3,4,5] }, { order:[3,4,5,1,2] }, { order:[2,1,5,4,3] }, { order:[4,5,1,2,3] }
+  ];
+
+  /* ===== Warna Piksel: warnai kotak berangka sesuai kunci ===== */
+  const WP_LEGEND = [
+    {n:1,name:'Kuning',hex:'#f4c548'},{n:2,name:'Hijau',hex:'#5ba64a'},{n:3,name:'Oranye',hex:'#e88a3c'},
+    {n:4,name:'Merah',hex:'#e2555f'},{n:5,name:'Biru',hex:'#4a9fc9'}
+  ];
+  const WARNAPIXEL_ROUNDS = [
+    { cols:8, grid:[
+      0,0,1,1,1,1,0,0,
+      0,1,1,1,1,1,1,0,
+      1,1,4,1,1,4,1,1,
+      1,1,1,1,1,1,1,1,
+      1,1,3,3,3,3,1,1,
+      0,1,1,1,1,1,1,0,
+      0,0,2,0,0,2,0,0,
+      0,0,2,0,0,2,0,0
+    ]},
+    { cols:7, grid:[
+      0,0,5,5,5,0,0,
+      0,5,5,5,5,5,0,
+      5,5,1,5,5,1,5,
+      5,5,5,5,5,5,5,
+      0,5,3,3,3,5,0,
+      0,0,5,0,5,0,0,
+      0,2,0,0,0,2,0
+    ]}
+  ];
+
+  /* ===== Kode Warna: ketuk titik sesuai urutan NAMA warna (bukan angka) ===== */
+  const KW_PALETTE = [
+    {key:'merah',name:'Merah',hex:'#e2555f'},{key:'kuning',name:'Kuning',hex:'#f4c548'},
+    {key:'biru',name:'Biru',hex:'#4a9fc9'},{key:'hijau',name:'Hijau',hex:'#5ba64a'},
+    {key:'ungu',name:'Ungu',hex:'#9b72cf'},{key:'oranye',name:'Oranye',hex:'#e88a3c'},
+    {key:'pink',name:'Pink',hex:'#f28bbf'},{key:'coklat',name:'Coklat',hex:'#a97c50'}
+  ];
+  const KODEWARNA_ROUNDS = [
+    { order:['merah','biru','hijau','kuning'] },
+    { order:['ungu','kuning','merah','biru'] },
+    { order:['hijau','ungu','oranye','merah','kuning'] },
+    { order:['biru','merah','kuning','hijau','ungu'] },
+    { order:['oranye','hijau','pink','biru','merah','kuning'] },
+    { order:['kuning','pink','ungu','oranye','hijau','merah'] },
+    { order:['merah','coklat','biru','pink','kuning','ungu','hijau'] },
+    { order:['hijau','oranye','coklat','merah','pink','biru','kuning'] },
+    { order:['pink','merah','coklat','ungu','kuning','hijau','biru','oranye'] },
+    { order:['coklat','biru','oranye','pink','hijau','merah','ungu','kuning'] }
+  ];
+  function dotLayout(n, w, h){
+    w = w || 260; h = h || 220;
+    const cx = w/2, cy = h/2 + 6, r = Math.min(w,h)/2 - 32;
+    const pts = [];
+    for (let i=0;i<n;i++){
+      const angle = -Math.PI/2 + i * (2*Math.PI/n);
+      pts.push({ x: Math.round(cx + r*Math.cos(angle)), y: Math.round(cy + r*Math.sin(angle)) });
+    }
+    return pts;
+  }
+
+  /* ===== Sambung Pasangan: ketuk dua kartu yang berpasangan ===== */
+  const SAMBUNGPASANGAN_ROUNDS = [
+    { pairs:[{a:'🌱',b:'Tanam'},{a:'💧',b:'Siram'},{a:'🌞',b:'Jemur'},{a:'✂️',b:'Potong'}] },
+    { pairs:[{a:'🧺',b:'Panen'},{a:'🚜',b:'Bajak'},{a:'🪴',b:'Pindah pot'},{a:'🧹',b:'Bersihkan'}] },
+    { pairs:[{a:'🌱',b:'Tanam'},{a:'💧',b:'Siram'},{a:'🌞',b:'Jemur'},{a:'✂️',b:'Potong'},{a:'🧺',b:'Panen'}] },
+    { pairs:[{a:'🚜',b:'Bajak'},{a:'🪴',b:'Pindah pot'},{a:'🧹',b:'Bersihkan'},{a:'🌱',b:'Tanam'},{a:'💧',b:'Siram'}] },
+    { pairs:[{a:'🌞',b:'Jemur'},{a:'✂️',b:'Potong'},{a:'🧺',b:'Panen'},{a:'🚜',b:'Bajak'},{a:'🪴',b:'Pindah pot'},{a:'🧹',b:'Bersihkan'}] },
+    { pairs:[{a:'🌱',b:'Tanam'},{a:'💧',b:'Siram'},{a:'🌞',b:'Jemur'},{a:'✂️',b:'Potong'},{a:'🧺',b:'Panen'},{a:'🚜',b:'Bajak'}] },
+    { pairs:[{a:'🪴',b:'Pindah pot'},{a:'🧹',b:'Bersihkan'},{a:'🌱',b:'Tanam'},{a:'💧',b:'Siram'},{a:'🌞',b:'Jemur'},{a:'✂️',b:'Potong'},{a:'🧺',b:'Panen'}] },
+    { pairs:[{a:'🚜',b:'Bajak'},{a:'🪴',b:'Pindah pot'},{a:'🧹',b:'Bersihkan'},{a:'🌱',b:'Tanam'},{a:'💧',b:'Siram'},{a:'🌞',b:'Jemur'},{a:'✂️',b:'Potong'}] },
+    { pairs:[{a:'🧺',b:'Panen'},{a:'🚜',b:'Bajak'},{a:'🪴',b:'Pindah pot'},{a:'🧹',b:'Bersihkan'},{a:'🌱',b:'Tanam'},{a:'💧',b:'Siram'},{a:'🌞',b:'Jemur'},{a:'✂️',b:'Potong'}] },
+    { pairs:[{a:'🌱',b:'Tanam'},{a:'💧',b:'Siram'},{a:'🌞',b:'Jemur'},{a:'✂️',b:'Potong'},{a:'🧺',b:'Panen'},{a:'🚜',b:'Bajak'},{a:'🪴',b:'Pindah pot'},{a:'🧹',b:'Bersihkan'}] }
+  ];
+
+  /* ===== Ayo Membuat Kode: tiru pola contoh di grid kosong ===== */
+  const BK_PALETTE = [
+    {key:'merah',hex:'#e2555f'},{key:'kuning',hex:'#f4c548'},{key:'biru',hex:'#4a9fc9'},
+    {key:'hijau',hex:'#5ba64a'},{key:'ungu',hex:'#9b72cf'},{key:'oranye',hex:'#e88a3c'}
+  ];
+  const BUATKODE_ROUNDS = [
+    { cols:3, pattern:[null,'merah',null, 'merah','merah','merah', null,'merah',null] },
+    { cols:3, pattern:['biru',null,'biru', null,'biru',null, 'biru',null,'biru'] },
+    { cols:3, pattern:['hijau','hijau','hijau', 'hijau',null,'hijau', 'hijau','hijau','hijau'] },
+    { cols:4, pattern:['merah','kuning','merah','kuning', 'kuning','merah','kuning','merah', 'merah','kuning','merah','kuning', 'kuning','merah','kuning','merah'] },
+    { cols:4, pattern:['biru',null,null,'ungu', null,'biru','ungu',null, null,'ungu','biru',null, 'ungu',null,null,'biru'] },
+    { cols:4, pattern:['oranye','hijau','hijau','oranye', 'hijau',null,null,'hijau', 'hijau',null,null,'hijau', 'oranye','hijau','hijau','oranye'] },
+    { cols:5, pattern:[
+        null,null,'kuning',null,null,
+        null,null,'kuning',null,null,
+        'kuning','kuning','kuning','kuning','kuning',
+        null,null,'kuning',null,null,
+        null,null,'kuning',null,null] },
+    { cols:5, pattern:[
+        'merah','biru','merah','biru','merah',
+        'biru','merah','biru','merah','biru',
+        'merah','biru','merah','biru','merah',
+        'biru','merah','biru','merah','biru',
+        'merah','biru','merah','biru','merah'] },
+    { cols:5, pattern:[
+        'ungu','ungu','ungu','ungu','ungu',
+        'ungu',null,null,null,'ungu',
+        'ungu',null,'oranye',null,'ungu',
+        'ungu',null,null,null,'ungu',
+        'ungu','ungu','ungu','ungu','ungu'] },
+    { cols:5, pattern:[
+        null,null,null,null,null,
+        null,'hijau',null,'hijau',null,
+        null,null,'kuning',null,null,
+        null,null,null,null,null,
+        null,'merah','merah','merah',null] }
+  ];
+
+  /* ===== Labirin: susun urutan panah sekaligus, baru jalankan ===== */
+  const LAB_DELTA = { atas:{dr:-1,dc:0}, bawah:{dr:1,dc:0}, kiri:{dr:0,dc:-1}, kanan:{dr:0,dc:1} };
+  const LAB_ARROW = { atas:'⬆️', bawah:'⬇️', kiri:'⬅️', kanan:'➡️' };
+  const LABIRIN_ROUNDS = [
+    { rows:2, cols:3, start:{r:0,c:0}, goal:{r:0,c:2}, obstacles:[] },
+    { rows:3, cols:3, start:{r:0,c:0}, goal:{r:2,c:2}, obstacles:[] },
+    { rows:3, cols:4, start:{r:0,c:0}, goal:{r:2,c:3}, obstacles:[{r:1,c:1}] },
+    { rows:4, cols:4, start:{r:0,c:0}, goal:{r:3,c:3}, obstacles:[{r:1,c:1},{r:2,c:2}] },
+    { rows:4, cols:5, start:{r:0,c:0}, goal:{r:3,c:4}, obstacles:[{r:1,c:0},{r:2,c:1},{r:3,c:2}] },
+    { rows:5, cols:5, start:{r:0,c:0}, goal:{r:4,c:4}, obstacles:[{r:0,c:2},{r:2,c:2},{r:4,c:2},{r:2,c:0},{r:2,c:4}] },
+    { rows:5, cols:6, start:{r:0,c:0}, goal:{r:4,c:5}, obstacles:[{r:1,c:1},{r:1,c:3},{r:3,c:2},{r:3,c:4}] },
+    { rows:6, cols:6, start:{r:0,c:0}, goal:{r:5,c:5}, obstacles:[{r:1,c:1},{r:1,c:4},{r:3,c:2},{r:3,c:3},{r:4,c:0},{r:4,c:5}] },
+    { rows:6, cols:6, start:{r:5,c:0}, goal:{r:0,c:5}, obstacles:[{r:0,c:1},{r:1,c:1},{r:1,c:3},{r:2,c:3},{r:3,c:1},{r:3,c:3},{r:4,c:1},{r:4,c:4}] },
+    { rows:6, cols:7, start:{r:0,c:0}, goal:{r:5,c:6}, obstacles:[{r:1,c:1},{r:1,c:2},{r:2,c:4},{r:2,c:5},{r:3,c:1},{r:3,c:2},{r:4,c:4},{r:4,c:5}] }
+  ];
+
+  /* ================= STATE ================= */
+  let currentGame = 'kodebaris';
+  let round = 0;
+  let picked = [];        // kodebaris: urutan index yang sudah dipilih
+  let waRemaining = [];   // warnaangka: sisa angka soal
+  let waAnswer = [];      // warnaangka: jawaban warna yang sudah dipilih
+  let bugRemoved = null;  // caribug
+  let magicPicked = new Set(); // aturanajaib
+  let awAnswer = [];      // angkawarna: jawaban angka yang sudah dipilih
+  let tgAnswer = [];      // tandagerak: jawaban tanda (key) yang sudah dipilih
+  let stAnswer = [];      // sambungtitik: urutan titik yang sudah diketuk
+  let wpSelectedColor = null; // warnapixel: warna terpilih
+  let wpFilled = {};      // warnapixel: index -> angka warna terisi
+  let kwAnswer = [];      // kodewarna: urutan warna yang sudah diketuk
+  let spSelected = null;  // sambungpasangan: index kartu pertama yang dipilih
+  let spMatched = new Set(); // sambungpasangan: index kartu yang sudah berpasangan
+  let bkTool = null;      // buatkode: warna/alat terpilih ('kosong' atau key warna)
+  let bkAnswer = [];      // buatkode: isi grid target saat ini
+  let lbSequence = [];    // labirin: urutan panah yang disusun
+  let lbRunning = false;  // labirin: status animasi berjalan
+
+  let progress = JSON.parse(localStorage.getItem('aktivitasinteraktif_progress') || '{}');
+
+  const tabsEl = document.getElementById('tabs');
+  const cardTitleEl = document.getElementById('cardTitle');
+  const cardInstrEl = document.getElementById('cardInstr');
+  const roundRowEl = document.getElementById('roundRow');
+  const gameAreaEl = document.getElementById('gameArea');
+  const messageEl = document.getElementById('message');
+
+  function roundsFor(game){
+    if (game==='kodebaris') return KODEBARIS_ROUNDS;
+    if (game==='warnaangka') return WARNAANGKA_ROUNDS;
+    if (game==='caribug') return CARIBUG_ROUNDS;
+    if (game==='aturanajaib') return ATURAN_ROUNDS;
+    if (game==='angkawarna') return ANGKAWARNA_ROUNDS;
+    if (game==='tandagerak') return TANDAGERAK_ROUNDS;
+    if (game==='sambungtitik') return SAMBUNGTITIK_ROUNDS;
+    if (game==='warnapixel') return WARNAPIXEL_ROUNDS;
+    if (game==='kodewarna') return KODEWARNA_ROUNDS;
+    if (game==='sambungpasangan') return SAMBUNGPASANGAN_ROUNDS;
+    if (game==='buatkode') return BUATKODE_ROUNDS;
+    return LABIRIN_ROUNDS;
+  }
+
+  function buildTabs(){
+    tabsEl.innerHTML = '';
+    GAMES.forEach(g=>{
+      const btn = document.createElement('button');
+      const done = (progress[g]||[]).length >= roundsFor(g).length;
+      btn.className = 'tab-btn' + (g===currentGame?' active':'') + (done?' done':'');
+      btn.innerHTML = GAME_META[g].title + ' <span class="chk">✓</span>';
+      btn.onclick = () => { currentGame = g; round = 0; loadRound(); };
+      tabsEl.appendChild(btn);
+    });
+  }
+
+  function buildRoundDots(){
+    const total = roundsFor(currentGame).length;
+    roundRowEl.innerHTML = '';
+    for (let i=0;i<total;i++){
+      const d = document.createElement('div');
+      const doneRounds = progress[currentGame]||[];
+      d.className = 'round-dot' + (i===round?' active':'') + (doneRounds.includes(i)?' done':'');
+      d.style.cursor = 'pointer';
+      d.onclick = () => { round = i; loadRound(); };
+      roundRowEl.appendChild(d);
+    }
+  }
+
+  function markDone(){
+    if (!progress[currentGame]) progress[currentGame] = [];
+    if (!progress[currentGame].includes(round)) progress[currentGame].push(round);
+    localStorage.setItem('aktivitasinteraktif_progress', JSON.stringify(progress));
+    buildTabs(); buildRoundDots();
+    const total = roundsFor(currentGame).length;
+    if (round < total - 1){
+      setTimeout(()=>{ round++; loadRound(); }, 1300);
+    }
+  }
+
+  function showMessage(type,text){
+    messageEl.innerText = text;
+    messageEl.className = 'message show ' + type;
+  }
+
+  function loadRound(){
+    messageEl.className = 'message';
+    cardTitleEl.innerText = GAME_META[currentGame].title;
+    cardInstrEl.innerText = GAME_META[currentGame].instr;
+    buildTabs();
+    buildRoundDots();
+    if (currentGame==='kodebaris') renderKodeBaris();
+    else if (currentGame==='warnaangka') renderWarnaAngka();
+    else if (currentGame==='caribug') renderCariBug();
+    else if (currentGame==='aturanajaib') renderAturanAjaib();
+    else if (currentGame==='angkawarna') renderAngkaWarna();
+    else if (currentGame==='tandagerak') renderTandaGerak();
+    else if (currentGame==='sambungtitik') renderSambungTitik();
+    else if (currentGame==='warnapixel') renderWarnaPixel();
+    else if (currentGame==='kodewarna') renderKodeWarna();
+    else if (currentGame==='sambungpasangan') renderSambungPasangan();
+    else if (currentGame==='buatkode') renderBuatKode();
+    else renderLabirin();
+  }
+
+  /* ===== 1. KODE BARIS ===== */
+  let kbShuffled = [];
+  function renderKodeBaris(){
+    const data = KODEBARIS_ROUNDS[round];
+    picked = [];
+    kbShuffled = data.steps.map((s,i)=>({text:s, orig:i})).sort(()=>Math.random()-0.5);
+    drawKodeBaris();
+  }
+  function drawKodeBaris(){
+    gameAreaEl.innerHTML = '';
+    const list = document.createElement('div');
+    list.className = 'step-list';
+    kbShuffled.forEach((item)=>{
+      const el = document.createElement('div');
+      const pickedIdx = picked.indexOf(item.orig);
+      el.className = 'step-item' + (pickedIdx>-1 ? ' picked' : '');
+      el.innerHTML = `<span class="num">${pickedIdx>-1 ? (pickedIdx+1) : ''}</span><span>${item.text}</span>`;
+      el.onclick = () => {
+        if (picked.includes(item.orig)) return;
+        const expected = picked.length;
+        if (item.orig === expected){
+          picked.push(item.orig);
+          drawKodeBaris();
+          if (picked.length === kbShuffled.length){
+            showMessage('win','🎉 Urutannya tepat!');
+            markDone();
+          }
+        } else {
+          el.classList.add('wrong');
+          showMessage('fail','Belum urutan yang tepat. Coba lihat lagi mana yang harus dilakukan duluan.');
+          setTimeout(()=>el.classList.remove('wrong'), 350);
+        }
+      };
+      list.appendChild(el);
+    });
+    gameAreaEl.appendChild(list);
+  }
+
+  /* ===== 2. WARNA ANGKA ===== */
+  function renderWarnaAngka(){
+    waRemaining = [...WARNAANGKA_ROUNDS[round]];
+    waAnswer = [];
+    drawWarnaAngka();
+  }
+  function drawWarnaAngka(){
+    gameAreaEl.innerHTML = '';
+    const legend = document.createElement('div'); legend.className='legend';
+    COLORS.forEach(c=>{
+      legend.innerHTML += `<div class="legend-item"><span class="dot" style="background:${c.hex}"></span>${c.n} = ${c.name}</div>`;
+    });
+    gameAreaEl.appendChild(legend);
+
+    const numRow = document.createElement('div'); numRow.className='num-row';
+    WARNAANGKA_ROUNDS[round].forEach((n,i)=>{
+      const chip = document.createElement('div'); chip.className='num-chip';
+      chip.innerText = n;
+      if (i < waAnswer.length) chip.style.opacity = '0.35';
+      numRow.appendChild(chip);
+    });
+    gameAreaEl.appendChild(numRow);
+
+    const swRow = document.createElement('div'); swRow.className='swatch-row';
+    COLORS.forEach(c=>{
+      const btn = document.createElement('button'); btn.className='swatch';
+      btn.style.background = c.hex; btn.title = c.name;
+      btn.onclick = () => {
+        const target = WARNAANGKA_ROUNDS[round][waAnswer.length];
+        if (target === undefined) return;
+        if (c.n === target){
+          waAnswer.push(c.n);
+          drawWarnaAngka();
+          if (waAnswer.length === WARNAANGKA_ROUNDS[round].length){
+            showMessage('win','🎉 Semua warna tepat!');
+            markDone();
+          }
+        } else {
+          showMessage('fail','Itu warna yang salah. Cek lagi kunci warnanya ya!');
+        }
+      };
+      swRow.appendChild(btn);
+    });
+    gameAreaEl.appendChild(swRow);
+
+    const ansRow = document.createElement('div'); ansRow.className='answer-row';
+    waAnswer.forEach(n=>{
+      const d = document.createElement('div'); d.className='answer-dot';
+      d.style.background = COLORS.find(c=>c.n===n).hex;
+      ansRow.appendChild(d);
+    });
+    gameAreaEl.appendChild(ansRow);
+  }
+
+  /* ===== 3. CARI BUG ===== */
+  function renderCariBug(){
+    bugRemoved = null;
+    drawCariBug();
+  }
+  function drawCariBug(){
+    gameAreaEl.innerHTML = '';
+    const data = CARIBUG_ROUNDS[round];
+    const info = document.createElement('div'); info.className='bug-map';
+    info.innerText = `Robot mulai di ${data.start}, targetnya ${data.goal}`;
+    gameAreaEl.appendChild(info);
+
+    const row = document.createElement('div'); row.className='bug-row';
+    data.seq.forEach((s,i)=>{
+      const chip = document.createElement('div');
+      chip.className = 'bug-chip' + (bugRemoved===i ? ' removed' : '');
+      chip.innerText = s;
+      chip.onclick = () => {
+        if (bugRemoved !== null) return;
+        bugRemoved = i;
+        drawCariBug();
+        if (i === data.bugIndex){
+          showMessage('win','🎉 Ketemu bug-nya! Itu memang perintah yang salah.');
+          markDone();
+        } else {
+          showMessage('fail','Bukan yang itu bug-nya. Coba pikirkan lagi urutan mana yang bikin robot meleset.');
+          setTimeout(()=>{ bugRemoved=null; drawCariBug(); }, 700);
+        }
+      };
+      row.appendChild(chip);
+    });
+    gameAreaEl.appendChild(row);
+  }
+
+  /* ===== 4. ATURAN AJAIB ===== */
+  function renderAturanAjaib(){
+    magicPicked = new Set();
+    drawAturanAjaib();
+  }
+  function drawAturanAjaib(){
+    gameAreaEl.innerHTML = '';
+    const data = ATURAN_ROUNDS[round];
+    const rule = document.createElement('div'); rule.className='rule-box';
+    rule.innerText = '📜 ' + data.rule;
+    gameAreaEl.appendChild(rule);
+
+    const grid = document.createElement('div'); grid.className='box-grid';
+    data.items.forEach((item,i)=>{
+      const box = document.createElement('div');
+      box.className = 'magic-box' + (magicPicked.has(i)?' picked':'');
+      box.innerText = item.emoji;
+      box.onclick = () => {
+        if (magicPicked.has(i)) magicPicked.delete(i); else magicPicked.add(i);
+        drawAturanAjaib();
+      };
+      grid.appendChild(box);
+    });
+    gameAreaEl.appendChild(grid);
+  }
+  function checkAturanAjaib(){
+    const data = ATURAN_ROUNDS[round];
+    let ok = true;
+    data.items.forEach((item,i)=>{
+      const matches = (!data.correctColor || item.color===data.correctColor) &&
+                       (!data.correctShape || item.shape===data.correctShape);
+      const isPicked = magicPicked.has(i);
+      if (matches !== isPicked) ok = false;
+    });
+    return ok;
+  }
+
+  /* ===== 5. ANGKA WARNA (kebalikan Warna Angka) ===== */
+  function renderAngkaWarna(){
+    awAnswer = [];
+    drawAngkaWarna();
+  }
+  function drawAngkaWarna(){
+    gameAreaEl.innerHTML = '';
+    const legend = document.createElement('div'); legend.className='legend';
+    AW_COLORS.forEach(c=>{
+      legend.innerHTML += `<div class="legend-item"><span class="dot" style="background:${c.hex}"></span>${c.n} = ${c.name}</div>`;
+    });
+    gameAreaEl.appendChild(legend);
+
+    const colorRow = document.createElement('div'); colorRow.className='color-row';
+    ANGKAWARNA_ROUNDS[round].forEach((n,i)=>{
+      const c = document.createElement('div'); c.className='color-circle';
+      c.style.background = AW_COLORS.find(x=>x.n===n).hex;
+      if (i < awAnswer.length) c.style.opacity = '0.35';
+      colorRow.appendChild(c);
+    });
+    gameAreaEl.appendChild(colorRow);
+
+    const numRow = document.createElement('div'); numRow.className='numsel-row';
+    AW_COLORS.forEach(c=>{
+      const btn = document.createElement('button'); btn.className='numsel-btn';
+      btn.innerText = c.n;
+      btn.onclick = () => {
+        const target = ANGKAWARNA_ROUNDS[round][awAnswer.length];
+        if (target === undefined) return;
+        if (c.n === target){
+          awAnswer.push(c.n);
+          drawAngkaWarna();
+          if (awAnswer.length === ANGKAWARNA_ROUNDS[round].length){
+            showMessage('win','🎉 Semua angka tepat!');
+            markDone();
+          }
+        } else {
+          showMessage('fail','Itu angka yang salah. Cek lagi kunci warnanya ya!');
+        }
+      };
+      numRow.appendChild(btn);
+    });
+    gameAreaEl.appendChild(numRow);
+
+    const ansRow = document.createElement('div'); ansRow.className='answer-row-num';
+    awAnswer.forEach(n=>{
+      const chip = document.createElement('div'); chip.className='answer-num-chip';
+      chip.style.background = AW_COLORS.find(c=>c.n===n).hex;
+      chip.innerText = n;
+      ansRow.appendChild(chip);
+    });
+    gameAreaEl.appendChild(ansRow);
+  }
+
+  /* ===== 6. TANDA GERAK ===== */
+  function renderTandaGerak(){
+    tgAnswer = [];
+    drawTandaGerak();
+  }
+  function drawTandaGerak(){
+    gameAreaEl.innerHTML = '';
+    const legend = document.createElement('div'); legend.className='pose-legend';
+    POSE_LEGEND.forEach(p=>{
+      legend.innerHTML += `<div class="pose-legend-item">${p.emoji}<span class="symbol">${p.symbol}</span></div>`;
+    });
+    gameAreaEl.appendChild(legend);
+
+    const poseRow = document.createElement('div'); poseRow.className='pose-row';
+    TANDAGERAK_ROUNDS[round].forEach((k,i)=>{
+      const cell = document.createElement('div');
+      cell.className = 'pose-cell' + (i < tgAnswer.length ? ' done' : '');
+      cell.innerText = POSE_LEGEND.find(p=>p.key===k).emoji;
+      poseRow.appendChild(cell);
+    });
+    gameAreaEl.appendChild(poseRow);
+
+    const symRow = document.createElement('div'); symRow.className='symbol-row';
+    POSE_LEGEND.forEach(p=>{
+      const btn = document.createElement('button'); btn.className='symbol-btn';
+      btn.innerText = p.symbol;
+      btn.onclick = () => {
+        const targetKey = TANDAGERAK_ROUNDS[round][tgAnswer.length];
+        if (targetKey === undefined) return;
+        if (p.key === targetKey){
+          tgAnswer.push(p.key);
+          drawTandaGerak();
+          if (tgAnswer.length === TANDAGERAK_ROUNDS[round].length){
+            showMessage('win','🎉 Semua tanda tepat!');
+            markDone();
+          }
+        } else {
+          showMessage('fail','Itu tanda yang salah. Cek lagi kunci gerakannya ya!');
+        }
+      };
+      symRow.appendChild(btn);
+    });
+    gameAreaEl.appendChild(symRow);
+  }
+
+  /* ===== 7. SAMBUNG TITIK ===== */
+  function renderSambungTitik(){
+    stAnswer = [];
+    drawSambungTitik();
+  }
+  function drawSambungTitik(){
+    gameAreaEl.innerHTML = '';
+    const data = SAMBUNGTITIK_ROUNDS[round];
+    const info = document.createElement('div'); info.className='bug-map';
+    info.innerText = 'Sambungkan sesuai urutan: ' + data.order.join('-');
+    gameAreaEl.appendChild(info);
+
+    const wrap = document.createElement('div'); wrap.className='dot-svg-wrap';
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS,'svg');
+    svg.setAttribute('viewBox','0 0 240 220');
+    svg.setAttribute('width','240'); svg.setAttribute('height','220');
+
+    for (let i=0;i<stAnswer.length-1;i++){
+      const a = DOT_POS.find(d=>d.n===stAnswer[i]);
+      const b = DOT_POS.find(d=>d.n===stAnswer[i+1]);
+      const line = document.createElementNS(svgNS,'line');
+      line.setAttribute('x1',a.x); line.setAttribute('y1',a.y);
+      line.setAttribute('x2',b.x); line.setAttribute('y2',b.y);
+      line.setAttribute('stroke','#5e3620'); line.setAttribute('stroke-width','3');
+      svg.appendChild(line);
+    }
+
+    DOT_POS.forEach(d=>{
+      const circle = document.createElementNS(svgNS,'circle');
+      circle.setAttribute('cx',d.x); circle.setAttribute('cy',d.y); circle.setAttribute('r','16');
+      circle.setAttribute('fill', d.hex);
+      circle.setAttribute('stroke', stAnswer.includes(d.n) ? '#5e3620' : 'none');
+      circle.setAttribute('stroke-width','3');
+      circle.style.cursor = 'pointer';
+      circle.addEventListener('click', () => {
+        const target = data.order[stAnswer.length];
+        if (target === undefined) return;
+        if (d.n === target){
+          stAnswer.push(d.n);
+          drawSambungTitik();
+          if (stAnswer.length === data.order.length){
+            showMessage('win','🎉 Tersambung sempurna sesuai urutan!');
+            markDone();
+          }
+        } else {
+          showMessage('fail','Bukan urutan itu. Coba lihat lagi angka berikutnya ya!');
+        }
+      });
+      svg.appendChild(circle);
+
+      const text = document.createElementNS(svgNS,'text');
+      text.setAttribute('x',d.x); text.setAttribute('y',d.y+5);
+      text.setAttribute('text-anchor','middle'); text.setAttribute('font-size','13');
+      text.setAttribute('font-weight','700'); text.setAttribute('fill','#fff');
+      text.style.pointerEvents = 'none';
+      text.textContent = d.n;
+      svg.appendChild(text);
+    });
+
+    wrap.appendChild(svg);
+    gameAreaEl.appendChild(wrap);
+  }
+
+  /* ===== 8. WARNA PIKSEL ===== */
+  function renderWarnaPixel(){
+    wpSelectedColor = null;
+    wpFilled = {};
+    drawWarnaPixel();
+  }
+  function drawWarnaPixel(){
+    gameAreaEl.innerHTML = '';
+    const legendRow = document.createElement('div'); legendRow.className='legend-swatch-row';
+    WP_LEGEND.forEach(c=>{
+      legendRow.innerHTML += `<div class="legend-swatch"><div class="sw" style="background:${c.hex}"></div>${c.n}</div>`;
+    });
+    gameAreaEl.appendChild(legendRow);
+
+    const pickRow = document.createElement('div'); pickRow.className='color-pick-row';
+    WP_LEGEND.forEach(c=>{
+      const btn = document.createElement('button');
+      btn.className = 'color-pick' + (wpSelectedColor===c.n ? ' selected' : '');
+      btn.style.background = c.hex;
+      btn.onclick = () => { wpSelectedColor = c.n; drawWarnaPixel(); };
+      pickRow.appendChild(btn);
+    });
+    gameAreaEl.appendChild(pickRow);
+
+    const data = WARNAPIXEL_ROUNDS[round];
+    const grid = document.createElement('div'); grid.className='pixel-grid';
+    grid.style.gridTemplateColumns = `repeat(${data.cols}, 28px)`;
+    data.grid.forEach((val,i)=>{
+      const cell = document.createElement('div');
+      cell.className = 'pixel-cell' + (val===0 ? ' locked' : '');
+      if (val !== 0){
+        if (wpFilled[i]){
+          cell.style.background = WP_LEGEND.find(c=>c.n===wpFilled[i]).hex;
+        } else {
+          cell.innerText = val;
+          cell.onclick = () => {
+            if (wpSelectedColor === null){ showMessage('hint','Pilih warna dulu dari kunci di atas ya!'); return; }
+            if (wpSelectedColor === val){
+              wpFilled[i] = val;
+              messageEl.className = 'message';
+              drawWarnaPixel();
+            } else {
+              cell.classList.add('wrong');
+              showMessage('fail','Warnanya belum pas. Cek lagi angka dan kuncinya ya!');
+              setTimeout(()=>cell.classList.remove('wrong'), 300);
+            }
+          };
+        }
+      }
+      grid.appendChild(cell);
+    });
+    gameAreaEl.appendChild(grid);
+  }
+  function checkWarnaPixel(){
+    const data = WARNAPIXEL_ROUNDS[round];
+    return data.grid.every((val,i)=> val===0 || wpFilled[i]===val);
+  }
+
+  /* ===== 9. KODE WARNA ===== */
+  function renderKodeWarna(){
+    kwAnswer = [];
+    drawKodeWarna();
+  }
+  function drawKodeWarna(){
+    gameAreaEl.innerHTML = '';
+    const data = KODEWARNA_ROUNDS[round];
+
+    const orderRow = document.createElement('div'); orderRow.className='kw-order-row';
+    data.order.forEach(key=>{
+      const c = KW_PALETTE.find(p=>p.key===key);
+      orderRow.innerHTML += `<span class="kw-chip" style="background:${c.hex}">${c.name}</span>`;
+    });
+    gameAreaEl.appendChild(orderRow);
+
+    if (!data._board) data._board = [...data.order].sort(()=>Math.random()-0.5);
+    const board = data._board;
+    const pts = dotLayout(board.length);
+
+    const wrap = document.createElement('div'); wrap.className='dot-svg-wrap';
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS,'svg');
+    svg.setAttribute('viewBox','0 0 260 220'); svg.setAttribute('width','260'); svg.setAttribute('height','220');
+
+    board.forEach((key,i)=>{
+      const c = KW_PALETTE.find(p=>p.key===key);
+      const pos = pts[i];
+      const done = kwAnswer.includes(key);
+      const circle = document.createElementNS(svgNS,'circle');
+      circle.setAttribute('cx',pos.x); circle.setAttribute('cy',pos.y); circle.setAttribute('r','18');
+      circle.setAttribute('fill', c.hex);
+      circle.setAttribute('stroke', done ? '#5e3620' : 'none');
+      circle.setAttribute('stroke-width','3');
+      circle.style.cursor = 'pointer';
+      circle.style.opacity = done ? '0.35' : '1';
+      circle.addEventListener('click', () => {
+        if (done) return;
+        const target = data.order[kwAnswer.length];
+        if (target === undefined) return;
+        if (key === target){
+          kwAnswer.push(key);
+          drawKodeWarna();
+          if (kwAnswer.length === data.order.length){
+            showMessage('win','🎉 Urutan warnanya tepat semua!');
+            markDone();
+          }
+        } else {
+          showMessage('fail','Bukan warna itu. Lihat lagi urutan namanya di atas ya!');
+        }
+      });
+      svg.appendChild(circle);
+    });
+    wrap.appendChild(svg);
+    gameAreaEl.appendChild(wrap);
+  }
+
+  /* ===== 10. SAMBUNG PASANGAN ===== */
+  function buildSpItems(data){
+    if (!data._items){
+      let items = [];
+      data.pairs.forEach((p,gi)=>{
+        items.push({content:p.a, group:gi});
+        items.push({content:p.b, group:gi});
+      });
+      data._items = items.sort(()=>Math.random()-0.5);
+    }
+    return data._items;
+  }
+  function renderSambungPasangan(){
+    spSelected = null;
+    spMatched = new Set();
+    drawSambungPasangan();
+  }
+  function drawSambungPasangan(){
+    gameAreaEl.innerHTML = '';
+    const data = SAMBUNGPASANGAN_ROUNDS[round];
+    const items = buildSpItems(data);
+    const grid = document.createElement('div'); grid.className='sp-grid';
+    items.forEach((item,i)=>{
+      const box = document.createElement('div');
+      box.className = 'sp-item' + (spSelected===i?' selected':'') + (spMatched.has(i)?' matched':'');
+      box.innerText = item.content;
+      box.onclick = () => {
+        if (spMatched.has(i)) return;
+        if (spSelected===null){ spSelected = i; drawSambungPasangan(); return; }
+        if (spSelected===i){ spSelected = null; drawSambungPasangan(); return; }
+        const first = items[spSelected];
+        if (first.group === item.group){
+          spMatched.add(spSelected); spMatched.add(i);
+          spSelected = null;
+          drawSambungPasangan();
+          if (spMatched.size === items.length){
+            showMessage('win','🎉 Semua pasangan tersambung!');
+            markDone();
+          }
+        } else {
+          box.classList.add('wrong');
+          showMessage('fail','Itu bukan pasangannya. Coba cari yang cocok ya!');
+          setTimeout(()=>{ spSelected = null; drawSambungPasangan(); }, 550);
+        }
+      };
+      grid.appendChild(box);
+    });
+    gameAreaEl.appendChild(grid);
+  }
+
+  /* ===== 11. AYO MEMBUAT KODE ===== */
+  function renderBuatKode(){
+    bkTool = null;
+    const data = BUATKODE_ROUNDS[round];
+    bkAnswer = new Array(data.pattern.length).fill(null);
+    drawBuatKode();
+  }
+  function drawBuatKode(){
+    gameAreaEl.innerHTML = '';
+    const data = BUATKODE_ROUNDS[round];
+    const grids = document.createElement('div'); grids.className='bk-grids';
+
+    const colA = document.createElement('div'); colA.className='bk-col';
+    colA.innerHTML = '<div class="bk-label">👀 Contoh</div>';
+    const gridA = document.createElement('div'); gridA.className='bk-grid';
+    gridA.style.gridTemplateColumns = `repeat(${data.cols}, 28px)`;
+    data.pattern.forEach(val=>{
+      const cell = document.createElement('div'); cell.className='bk-cell';
+      if (val) cell.style.background = BK_PALETTE.find(c=>c.key===val).hex;
+      gridA.appendChild(cell);
+    });
+    colA.appendChild(gridA);
+    grids.appendChild(colA);
+
+    const colB = document.createElement('div'); colB.className='bk-col';
+    colB.innerHTML = '<div class="bk-label">✍️ Punyamu</div>';
+    const gridB = document.createElement('div'); gridB.className='bk-grid';
+    gridB.style.gridTemplateColumns = `repeat(${data.cols}, 28px)`;
+    data.pattern.forEach((val,i)=>{
+      const cell = document.createElement('div');
+      cell.className = 'bk-cell' + (val ? ' target' : '');
+      if (bkAnswer[i]) cell.style.background = BK_PALETTE.find(c=>c.key===bkAnswer[i]).hex;
+      if (val){
+        cell.onclick = () => {
+          if (bkTool===null){ showMessage('hint','Pilih dulu warna atau penghapus dari palet ya!'); return; }
+          bkAnswer[i] = bkTool==='kosong' ? null : bkTool;
+          messageEl.className = 'message';
+          drawBuatKode();
+        };
+      }
+      gridB.appendChild(cell);
+    });
+    colB.appendChild(gridB);
+    grids.appendChild(colB);
+    gameAreaEl.appendChild(grids);
+
+    const paletteRow = document.createElement('div'); paletteRow.className='bk-palette-row';
+    BK_PALETTE.forEach(c=>{
+      const btn = document.createElement('button');
+      btn.className = 'bk-swatch' + (bkTool===c.key ? ' selected' : '');
+      btn.style.background = c.hex;
+      btn.onclick = () => { bkTool = c.key; drawBuatKode(); };
+      paletteRow.appendChild(btn);
+    });
+    const kosongBtn = document.createElement('button');
+    kosongBtn.className = 'bk-swatch kosong' + (bkTool==='kosong' ? ' selected' : '');
+    kosongBtn.innerText = '✕';
+    kosongBtn.onclick = () => { bkTool = 'kosong'; drawBuatKode(); };
+    paletteRow.appendChild(kosongBtn);
+    gameAreaEl.appendChild(paletteRow);
+  }
+  function checkBuatKode(){
+    const data = BUATKODE_ROUNDS[round];
+    return data.pattern.every((val,i)=> (val||undefined) === (bkAnswer[i]||undefined));
+  }
+
+  /* ===== 12. LABIRIN ===== */
+  function renderLabirin(){
+    lbSequence = [];
+    lbRunning = false;
+    drawLabirin();
+  }
+  function labIsObstacle(lvl,r,c){ return lvl.obstacles.some(o=>o.r===r&&o.c===c); }
+  function drawLabirin(pos){
+    gameAreaEl.innerHTML = '';
+    const lvl = LABIRIN_ROUNDS[round];
+    const p = pos || lvl.start;
+
+    const gridWrap = document.createElement('div'); gridWrap.className='lab-grid-wrap';
+    const grid = document.createElement('div'); grid.className='lab-grid';
+    grid.style.gridTemplateColumns = `repeat(${lvl.cols}, 34px)`;
+    for (let r=0;r<lvl.rows;r++){
+      for (let c=0;c<lvl.cols;c++){
+        const cell = document.createElement('div'); cell.className='lab-cell';
+        if (labIsObstacle(lvl,r,c)){ cell.classList.add('obstacle'); cell.innerText='🪨'; }
+        else if (r===lvl.goal.r && c===lvl.goal.c){ cell.classList.add('goal'); cell.innerText='🚩'; }
+        if (r===p.r && c===p.c){ cell.classList.add('robot'); cell.innerText='🤖'; }
+        grid.appendChild(cell);
+      }
+    }
+    gridWrap.appendChild(grid);
+    gameAreaEl.appendChild(gridWrap);
+
+    const seqLabel = document.createElement('div'); seqLabel.className='dot-info'; seqLabel.innerText='📋 Urutan perintah';
+    gameAreaEl.appendChild(seqLabel);
+    const seqRow = document.createElement('div'); seqRow.className='lab-seq-row';
+    lbSequence.forEach(dir=>{
+      const chip = document.createElement('div'); chip.className='lab-seq-chip'; chip.innerText = LAB_ARROW[dir];
+      seqRow.appendChild(chip);
+    });
+    gameAreaEl.appendChild(seqRow);
+
+    const dpad = document.createElement('div'); dpad.className='lab-dpad';
+    ['atas','kiri','bawah','kanan'].forEach(dir=>{
+      const btn = document.createElement('button');
+      btn.className = 'lab-dbtn ' + (dir==='atas'?'up':dir==='kiri'?'left':dir==='bawah'?'down':'right');
+      btn.innerText = LAB_ARROW[dir];
+      btn.onclick = () => { if (lbRunning) return; lbSequence.push(dir); drawLabirin(); };
+      dpad.appendChild(btn);
+    });
+    gameAreaEl.appendChild(dpad);
+
+    const undoBtn = document.createElement('button'); undoBtn.className='lab-undo-btn'; undoBtn.innerText='⌫ Hapus langkah terakhir';
+    undoBtn.onclick = () => { if (lbRunning) return; lbSequence.pop(); drawLabirin(); };
+    gameAreaEl.appendChild(undoBtn);
+  }
+  function runLabirin(){
+    if (lbRunning) return;
+    if (lbSequence.length === 0){ showMessage('hint','Susun dulu perintah panahnya ya!'); return; }
+    lbRunning = true;
+    const lvl = LABIRIN_ROUNDS[round];
+    let pos = { r:lvl.start.r, c:lvl.start.c };
+    let step = 0;
+    function tick(){
+      if (step >= lbSequence.length){
+        lbRunning = false;
+        if (pos.r===lvl.goal.r && pos.c===lvl.goal.c){
+          showMessage('win','🎉 Sampai! Robot berhasil ke bendera!');
+          markDone();
+        } else {
+          showMessage('fail','Belum sampai ke bendera. Coba atur ulang urutannya!');
+        }
+        return;
+      }
+      const d = LAB_DELTA[lbSequence[step]];
+      const nr = pos.r + d.dr, nc = pos.c + d.dc;
+      if (nr<0 || nr>=lvl.rows || nc<0 || nc>=lvl.cols || labIsObstacle(lvl,nr,nc)){
+        lbRunning = false;
+        showMessage('fail','Robot nabrak batu / keluar labirin! Coba lagi ya.');
+        drawLabirin(pos);
+        return;
+      }
+      pos = { r:nr, c:nc };
+      drawLabirin(pos);
+      step++;
+      setTimeout(tick, 420);
+    }
+    tick();
+  }
+
+  /* ===== CHECK & RESET ===== */
+  document.getElementById('btnCheck').onclick = () => {
+    if (currentGame==='caribug'){
+      showMessage('hint','Ketuk langsung perintah yang menurutmu salah, nggak perlu tombol periksa.');
+      return;
+    }
+    if (currentGame==='kodebaris' || currentGame==='warnaangka' || currentGame==='angkawarna' ||
+        currentGame==='tandagerak' || currentGame==='sambungtitik' ||
+        currentGame==='kodewarna' || currentGame==='sambungpasangan'){
+      showMessage('hint','Lanjut ketuk sampai semua terisi, nanti otomatis terperiksa.');
+      return;
+    }
+    if (currentGame==='aturanajaib'){
+      if (magicPicked.size===0){ showMessage('hint','Pilih dulu kotak-kotak yang sesuai aturan.'); return; }
+      if (checkAturanAjaib()){
+        showMessage('win','🎉 Tepat! Semua sesuai aturan.');
+        markDone();
+      } else {
+        showMessage('fail','Masih ada yang belum sesuai aturan. Coba cek lagi satu-satu.');
+      }
+      return;
+    }
+    if (currentGame==='warnapixel'){
+      const data = WARNAPIXEL_ROUNDS[round];
+      const neededCount = data.grid.filter(v=>v!==0).length;
+      const filledCount = Object.keys(wpFilled).length;
+      if (filledCount < neededCount){ showMessage('hint','Warnai dulu semua kotak berangka ya!'); return; }
+      if (checkWarnaPixel()){
+        showMessage('win','🎉 Tepat! Semua warna sudah pas.');
+        markDone();
+      } else {
+        showMessage('fail','Masih ada warna yang belum pas. Coba cek lagi.');
+      }
+      return;
+    }
+    if (currentGame==='buatkode'){
+      const data = BUATKODE_ROUNDS[round];
+      const hasEmpty = bkAnswer.some((v,i)=> !!data.pattern[i] !== !!v);
+      if (checkBuatKode()){
+        showMessage('win','🎉 Polanya persis sama!');
+        markDone();
+      } else if (hasEmpty){
+        showMessage('hint','Lengkapi dulu semua kotak sesuai contoh di kiri ya!');
+      } else {
+        showMessage('fail','Masih ada yang belum sesuai contoh. Coba cek lagi satu-satu.');
+      }
+      return;
+    }
+    if (currentGame==='labirin'){
+      runLabirin();
+    }
+  };
+
+  document.getElementById('btnReset').onclick = () => { loadRound(); };
+
+  buildTabs();
+  loadRound();
+</script>
+</body>
+</html>
