@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Robo Kebun — Ayo Belajar Coding Tanpa Layar!</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#ffd9a0;--sky-bottom:#fff3da;
+    --soil:#7a4a2b;--soil-dark:#5e3620;
+    --card:#fffaf0;
+    --ink:#3a2f2a;--ink-soft:#7a6a5c;
+
+    --c-merah:#e2555f;--c-merah-dark:#b93b46;
+    --c-kuning:#f4c548;--c-kuning-dark:#cf9e1f;
+    --c-biru:#4a9fc9;--c-biru-dark:#2f7796;
+    --c-hijau:#5ba64a;--c-hijau-dark:#3f7d34;
+    --c-ungu:#9b72cf;--c-ungu-dark:#7550a8;
+    --c-oranye:#e88a3c;--c-oranye-dark:#bf6a26;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Quicksand',sans-serif;color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 45%, #f3e6c4 100%);
+    min-height:100vh;overflow-x:hidden;
+  }
+  h1,h2,h3,.display{font-family:'Fredoka',sans-serif;}
+  a{text-decoration:none;color:inherit;}
+
+  /* ===== hero ===== */
+  .hero{position:relative;z-index:5;text-align:center;padding:36px 16px 10px;}
+  .eyebrow{display:inline-block;background:var(--c-ungu);color:#fff;font-weight:700;font-size:12px;
+    letter-spacing:.04em;padding:5px 14px;border-radius:20px;box-shadow:0 3px 0 var(--c-ungu-dark);
+    margin-bottom:12px;}
+  .hero h1{margin:0;font-size:clamp(30px,7vw,46px);color:var(--soil-dark);letter-spacing:.01em;
+    display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;}
+  .hero p{margin:8px auto 0;color:var(--ink-soft);font-weight:600;font-size:15px;max-width:480px;line-height:1.5;}
+
+  .robot{font-size:44px;display:inline-block;animation:bob 2.6s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-6px) rotate(2deg);}}
+
+  /* ===== peta kebun (garden path) ===== */
+  .map{position:relative;max-width:620px;margin:26px auto 10px;padding:10px 16px 40px;}
+  .vine{position:absolute;left:50%;top:8px;bottom:24px;width:6px;
+    background:repeating-linear-gradient(180deg,var(--soil) 0 10px, transparent 10px 20px);
+    transform:translateX(-50%);border-radius:6px;z-index:0;}
+
+  .plot{position:relative;z-index:2;display:flex;align-items:center;gap:16px;
+    background:var(--card);border:4px solid var(--soil);border-radius:22px;
+    padding:16px;margin:0 0 26px;box-shadow:0 8px 0 rgba(0,0,0,.08);
+    transition:transform .15s, box-shadow .15s;}
+  .plot:hover{transform:translateY(-4px);box-shadow:0 12px 0 rgba(0,0,0,.1);}
+  .plot:nth-child(even){flex-direction:row-reverse;text-align:right;}
+
+  .badge{flex-shrink:0;width:64px;height:64px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-size:30px;color:#fff;position:relative;}
+  .badge::after{content:attr(data-n);position:absolute;top:-6px;right:-6px;width:22px;height:22px;
+    border-radius:50%;background:var(--soil-dark);color:#fff;font-family:'Fredoka',sans-serif;
+    font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;
+    border:2px solid var(--card);}
+  .plot:nth-child(even) .badge::after{right:auto;left:-6px;}
+
+  .badge-biru{background:var(--c-biru);box-shadow:0 4px 0 var(--c-biru-dark);}
+  .badge-hijau{background:var(--c-hijau);box-shadow:0 4px 0 var(--c-hijau-dark);}
+  .badge-ungu{background:var(--c-ungu);box-shadow:0 4px 0 var(--c-ungu-dark);}
+  .badge-oranye{background:var(--c-oranye);box-shadow:0 4px 0 var(--c-oranye-dark);}
+
+  .plot-body{flex:1;min-width:0;}
+  .plot-body h2{margin:0 0 3px;font-size:18px;color:var(--soil-dark);}
+  .plot-body p{margin:0 0 10px;font-size:13px;color:var(--ink-soft);font-weight:600;line-height:1.45;}
+
+  .go{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13.5px;
+    padding:8px 16px;border-radius:14px;color:#fff;}
+  .go-biru{background:var(--c-biru-dark);}
+  .go-hijau{background:var(--c-hijau-dark);}
+  .go-ungu{background:var(--c-ungu-dark);}
+  .go-oranye{background:var(--c-oranye-dark);}
+  .plot:nth-child(even) .go{flex-direction:row-reverse;}
+
+  @media(max-width:520px){
+    .plot, .plot:nth-child(even){flex-direction:row;text-align:left;}
+    .plot:nth-child(even) .go{flex-direction:row;}
+    .plot:nth-child(even) .badge::after{right:-6px;left:auto;}
+    .vine{left:34px;}
+    .plot{padding-left:10px;}
+    .badge{width:52px;height:52px;font-size:24px;}
+  }
+
+  .footnote{position:relative;z-index:5;text-align:center;color:var(--ink-soft);font-size:12px;
+    font-weight:600;padding:6px 16px 34px;}
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="eyebrow">🌻 CODING UNPLUGGED UNTUK ANAK</div>
+    <h1><span class="robot">🤖</span> Robo Kebun</h1>
+    <p>Empat petak permainan buat belajar berpikir seperti programmer — tanpa perlu menulis kode satu baris pun!</p>
+  </div>
+
+  <div class="map">
+    <div class="vine"></div>
+
+    <a class="plot" href="games/robo-kebun.html">
+      <div class="badge badge-biru" data-n="1">🧭</div>
+      <div class="plot-body">
+        <h2>Robo Kebun</h2>
+        <p>Tuntun robot lewat kebun pakai panah arah — langkah pertama belajar urutan perintah.</p>
+        <span class="go go-biru">Masuk kebun →</span>
+      </div>
+    </a>
+
+    <a class="plot" href="games/robo-kebun-blok.html">
+      <div class="badge badge-hijau" data-n="2">🧩</div>
+      <div class="plot-body">
+        <h2>Robo Kebun — Kode Blok</h2>
+        <p>Susun blok Maju, Belok, dan Ulangi buat mengatur perjalanan robot. Kenalan sama loop!</p>
+        <span class="go go-hijau">Masuk kebun →</span>
+      </div>
+    </a>
+
+    <a class="plot" href="games/ladang-pola.html">
+      <div class="badge badge-ungu" data-n="3">🌼</div>
+      <div class="plot-body">
+        <h2>Ladang Pola</h2>
+        <p>Amati urutan warna bunga, lalu tebak bunga yang kosong sesuai polanya.</p>
+        <span class="go go-ungu">Masuk kebun →</span>
+      </div>
+    </a>
+
+    <a class="plot" href="games/aktivitas-interaktif.html">
+      <div class="badge badge-oranye" data-n="4">🎲</div>
+      <div class="plot-body">
+        <h2>Aktivitas Interaktif</h2>
+        <p>Empat mini-game seru: Kode Baris, Warna Angka, dan lainnya, semua dalam satu petak.</p>
+        <span class="go go-oranye">Masuk kebun →</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="footnote">Robo Kebun · kumpulan permainan coding unplugged 🌱</div>
+
+</body>
+</html>
