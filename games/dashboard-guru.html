@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Guru — Robo Kebun</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#ffd9a0;--sky-bottom:#fff3da;
+    --soil:#7a4a2b;--soil-dark:#5e3620;
+    --card:#fffaf0;
+    --ink:#3a2f2a;--ink-soft:#7a6a5c;
+    --c-merah-dark:#b93b46;
+    --c-hijau:#5ba64a;--c-hijau-dark:#3f7d34;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;font-family:'Quicksand',sans-serif;color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 45%, #f3e6c4 100%);
+    min-height:100vh;padding:20px 16px 60px;
+  }
+  h1,.display{font-family:'Fredoka',sans-serif;}
+  a{text-decoration:none;}
+
+  .topbar{max-width:680px;margin:0 auto 22px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .topbar .hello{font-weight:700;color:var(--soil-dark);font-size:15px;}
+  .topbar a.logout{background:var(--c-merah-dark);color:#fff;font-family:'Fredoka',sans-serif;
+    font-weight:600;font-size:13.5px;padding:8px 18px;border-radius:12px;
+    box-shadow:0 3px 0 rgba(0,0,0,.15);}
+  .topbar a.logout:active{transform:translateY(2px);box-shadow:none;}
+
+  h1{text-align:center;font-size:clamp(24px,5vw,32px);color:var(--soil-dark);margin:0 0 6px;}
+  .sub{text-align:center;color:var(--ink-soft);font-weight:600;font-size:14px;
+    max-width:520px;margin:0 auto 22px;}
+
+  .btn-refresh{display:block;margin:0 auto 22px;background:var(--c-hijau);color:#fff;border:none;
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:13.5px;padding:9px 20px;
+    border-radius:12px;cursor:pointer;box-shadow:0 3px 0 var(--c-hijau-dark);}
+  .btn-refresh:active{transform:translateY(2px);box-shadow:none;}
+
+  .card{max-width:680px;margin:0 auto 18px;background:var(--card);border:4px solid var(--soil);
+    border-radius:22px;padding:22px;box-shadow:0 8px 0 rgba(0,0,0,.08);text-align:center;
+    color:var(--ink-soft);font-weight:600;}
+
+  .search-wrap{max-width:680px;margin:0 auto 12px;}
+  #searchInput{width:100%;padding:11px 14px;border-radius:12px;border:2px solid #ddd0b8;
+    font-family:'Quicksand',sans-serif;font-weight:600;font-size:14px;outline:none;}
+  #searchInput:focus{border-color:var(--c-hijau);}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="hello" id="helloText">Halo, Guru</span>
+    <a class="logout" href="#" id="logoutBtn">Keluar</a>
+  </div>
+
+  <h1>📊 Dashboard Guru</h1>
+  <p class="sub">Rekap nama & skor siswa dari sheet "Siswa" — otomatis update tiap siswa menyelesaikan ladang.</p>
+
+  <button class="btn-refresh" id="btnRefresh">🔄 Muat Ulang Data</button>
+
+  <div class="search-wrap">
+    <input id="searchInput" type="text" placeholder="🔎 Cari nama siswa...">
+  </div>
+
+  <div class="card" id="loadingCard">Memuat data siswa...</div>
+
+  <div id="tableWrap" style="display:none;max-width:680px;margin:0 auto;">
+    <table id="nilaiTable" style="width:100%;border-collapse:collapse;background:var(--card);
+      border:4px solid var(--soil);border-radius:16px;overflow:hidden;">
+      <thead>
+        <tr style="background:var(--soil);color:#fff;font-family:'Fredoka',sans-serif;">
+          <th style="padding:10px 12px;text-align:left;">Nama Siswa</th>
+          <th style="padding:10px 12px;text-align:left;">Nama Sekolah</th>
+          <th style="padding:10px 12px;text-align:center;">Skor</th>
+        </tr>
+      </thead>
+      <tbody id="nilaiBody"></tbody>
+    </table>
+  </div>
+
+<script>
+  var sess = null;
+  (function () {
+    var raw = sessionStorage.getItem('robokebun_user');
+    if (!raw) { window.location.href = 'login.html'; return; }
+    try {
+      sess = JSON.parse(raw);
+      if (sess.role !== 'guru') { window.location.href = 'login.html'; return; }
+      var u = sess.user || {};
+      var nama = u.nama || u.name || sess.username || 'Guru';
+      document.getElementById('helloText').textContent = 'Halo, ' + nama;
+    } catch (err) {
+      window.location.href = 'login.html';
+    }
+  })();
+
+  document.getElementById('logoutBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    sessionStorage.removeItem('robokebun_user');
+    window.location.href = 'login.html';
+  });
+
+  // ==== ambil & tampilkan daftar siswa + skor ====
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCJEpXP9XuKDik6Wbwk78Jq0jkd4Yp394DXskwYdFR_Dnx3zdd8_q54yav1ZPIOn5wAg/exec';
+
+  let semuaSiswa = [];
+
+  function renderTabel(list){
+    const tbody = document.getElementById('nilaiBody');
+    tbody.innerHTML = '';
+    if (list.length === 0){
+      tbody.innerHTML = '<tr><td colspan="3" style="padding:16px;text-align:center;color:var(--ink-soft);">Belum ada data siswa.</td></tr>';
+      return;
+    }
+    list.forEach(function(s){
+      const tr = document.createElement('tr');
+      tr.style.borderTop = '1px solid #eee0c8';
+      tr.innerHTML =
+        '<td style="padding:9px 12px;">' + s.nama + '</td>' +
+        '<td style="padding:9px 12px;">' + (s.namaSekolah || '-') + '</td>' +
+        '<td style="padding:9px 12px;text-align:center;font-weight:700;">' + s.skor + '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function muatDaftarSiswa(){
+    document.getElementById('loadingCard').style.display = 'block';
+    document.getElementById('loadingCard').textContent = 'Memuat data siswa...';
+    document.getElementById('tableWrap').style.display = 'none';
+    try{
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'daftarSiswa' })
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message || 'Gagal mengambil data siswa');
+
+      semuaSiswa = json.siswa || [];
+      // urutkan skor tertinggi dulu
+      semuaSiswa.sort(function(a,b){ return b.skor - a.skor; });
+
+      renderTabel(semuaSiswa);
+      document.getElementById('loadingCard').style.display = 'none';
+      document.getElementById('tableWrap').style.display = 'block';
+    }catch(err){
+      document.getElementById('loadingCard').textContent = 'Gagal memuat data: ' + err.message;
+    }
+  }
+
+  document.getElementById('btnRefresh').addEventListener('click', muatDaftarSiswa);
+
+  document.getElementById('searchInput').addEventListener('input', function(e){
+    const kw = e.target.value.trim().toLowerCase();
+    const hasil = semuaSiswa.filter(function(s){
+      return s.nama.toLowerCase().indexOf(kw) !== -1;
+    });
+    renderTabel(hasil);
+  });
+
+  muatDaftarSiswa();
+</script>
+</body>
+</html>
