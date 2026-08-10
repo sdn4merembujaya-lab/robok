@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Robo Kebun — Ayo Belajar Coding Tanpa Layar!</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robo Kebun</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -12,177 +12,520 @@
     --soil:#7a4a2b;--soil-dark:#5e3620;
     --card:#fffaf0;
     --ink:#3a2f2a;--ink-soft:#7a6a5c;
-
-    --c-merah:#e2555f;--c-merah-dark:#b93b46;
-    --c-kuning:#f4c548;--c-kuning-dark:#cf9e1f;
     --c-biru:#4a9fc9;--c-biru-dark:#2f7796;
     --c-hijau:#5ba64a;--c-hijau-dark:#3f7d34;
-    --c-ungu:#9b72cf;--c-ungu-dark:#7550a8;
-    --c-oranye:#e88a3c;--c-oranye-dark:#bf6a26;
+    --c-ungu:#8b5fbf;--c-ungu-dark:#6b3fa0;
+    --c-oranye:#e08a2e;--c-oranye-dark:#b56b1c;
+    --c-merah:#c0405a;--c-merah-dark:#96253c;
+    --gold:#f0b429;
+    --err:#c0392b;
+    --shadow:0 4px 0 rgba(90,54,32,0.15);
   }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;}
+  *{box-sizing:border-box;}
   body{
-    font-family:'Quicksand',sans-serif;color:var(--ink);
+    margin:0;font-family:'Quicksand',sans-serif;color:var(--ink);
     background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 45%, #f3e6c4 100%);
-    min-height:100vh;overflow-x:hidden;
+    min-height:100vh;
   }
-  h1,h2,h3,.display{font-family:'Fredoka',sans-serif;}
-  a{text-decoration:none;color:inherit;}
+  h1,h3,h4,.display{font-family:'Fredoka',sans-serif;}
 
-  /* ===== hero ===== */
-  .hero{position:relative;z-index:5;text-align:center;padding:36px 16px 10px;}
-  .eyebrow{display:inline-block;background:var(--c-ungu);color:#fff;font-weight:700;font-size:12px;
-    letter-spacing:.04em;padding:5px 14px;border-radius:20px;box-shadow:0 3px 0 var(--c-ungu-dark);
-    margin-bottom:12px;}
-  .hero h1{margin:0;font-size:clamp(30px,7vw,46px);color:var(--soil-dark);letter-spacing:.01em;
-    display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;}
-  .hero p{margin:8px auto 0;color:var(--ink-soft);font-weight:600;font-size:15px;max-width:480px;line-height:1.5;}
+  /* ===== HEADER ===== */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 24px;background:var(--card);
+    border-bottom:3px solid var(--soil);
+    position:sticky;top:0;z-index:50;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:18px;color:var(--soil-dark);}
+  .brand .robot{font-size:22px;}
+  .student{display:flex;align-items:center;gap:12px;}
+  .student-info{
+    display:flex;align-items:center;gap:10px;background:#fdeecb;
+    border:2px solid var(--soil);border-radius:999px;padding:5px 14px 5px 6px;
+  }
+  .avatar{
+    width:32px;height:32px;border-radius:50%;background:var(--c-biru);
+    display:flex;align-items:center;justify-content:center;color:white;
+    font-weight:700;font-size:14px;border:2px solid var(--soil);
+    font-family:'Fredoka',sans-serif;
+  }
+  .student-name{font-weight:700;font-size:14px;color:var(--soil-dark);}
+  .role-badge{font-size:10.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+  .logout-btn{
+    display:flex;align-items:center;gap:6px;background:#fff;border:2px solid var(--soil);
+    color:var(--soil-dark);font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;
+    cursor:pointer;box-shadow:var(--shadow);transition:transform .08s ease;
+    font-family:'Quicksand',sans-serif;
+  }
+  .logout-btn:hover{background:#fff3e0;}
+  .logout-btn:active{transform:translateY(2px);box-shadow:none;}
 
-  .robot{font-size:44px;display:inline-block;animation:bob 2.6s ease-in-out infinite;}
-  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-6px) rotate(2deg);}}
+  .breadcrumb{max-width:760px;margin:18px auto 0;padding:0 20px;font-size:13px;color:var(--ink-soft);font-weight:600;}
+  .breadcrumb span.current{color:var(--soil-dark);}
 
-  /* ===== peta kebun (garden path) ===== */
-  .map{position:relative;max-width:620px;margin:26px auto 10px;padding:10px 16px 40px;}
-  .vine{position:absolute;left:50%;top:8px;bottom:24px;width:6px;
-    background:repeating-linear-gradient(180deg,var(--soil) 0 10px, transparent 10px 20px);
-    transform:translateX(-50%);border-radius:6px;z-index:0;}
+  .view{display:none;}
+  .view.active{display:block;}
 
-  .plot{position:relative;z-index:2;display:flex;align-items:center;gap:16px;
-    background:var(--card);border:4px solid var(--soil);border-radius:22px;
-    padding:16px;margin:0 0 26px;box-shadow:0 8px 0 rgba(0,0,0,.08);
-    transition:transform .15s, box-shadow .15s;}
-  .plot:hover{transform:translateY(-4px);box-shadow:0 12px 0 rgba(0,0,0,.1);}
-  .plot:nth-child(even){flex-direction:row-reverse;text-align:right;}
-
-  .badge{flex-shrink:0;width:64px;height:64px;border-radius:50%;display:flex;align-items:center;
-    justify-content:center;font-size:30px;color:#fff;position:relative;}
-  .badge::after{content:attr(data-n);position:absolute;top:-6px;right:-6px;width:22px;height:22px;
-    border-radius:50%;background:var(--soil-dark);color:#fff;font-family:'Fredoka',sans-serif;
-    font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;
-    border:2px solid var(--card);}
-  .plot:nth-child(even) .badge::after{right:auto;left:-6px;}
-
-  .badge-biru{background:var(--c-biru);box-shadow:0 4px 0 var(--c-biru-dark);}
-  .badge-hijau{background:var(--c-hijau);box-shadow:0 4px 0 var(--c-hijau-dark);}
-  .badge-ungu{background:var(--c-ungu);box-shadow:0 4px 0 var(--c-ungu-dark);}
-  .badge-oranye{background:var(--c-oranye);box-shadow:0 4px 0 var(--c-oranye-dark);}
-  .badge-merah{background:var(--c-merah);box-shadow:0 4px 0 var(--c-merah-dark);}
-
-  .plot-body{flex:1;min-width:0;}
-  .plot-body h2{margin:0 0 3px;font-size:18px;color:var(--soil-dark);}
-  .plot-body p{margin:0 0 10px;font-size:13px;color:var(--ink-soft);font-weight:600;line-height:1.45;}
-
-  .go{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13.5px;
-    padding:8px 16px;border-radius:14px;color:#fff;}
-  .go-biru{background:var(--c-biru-dark);}
-  .go-hijau{background:var(--c-hijau-dark);}
-  .go-ungu{background:var(--c-ungu-dark);}
-  .go-oranye{background:var(--c-oranye-dark);}
-  .go-merah{background:var(--c-merah-dark);}
-  .plot:nth-child(even) .go{flex-direction:row-reverse;}
-
-  @media(max-width:520px){
-    .plot, .plot:nth-child(even){flex-direction:row;text-align:left;}
-    .plot:nth-child(even) .go{flex-direction:row;}
-    .plot:nth-child(even) .badge::after{right:-6px;left:auto;}
-    .vine{left:34px;}
-    .plot{padding-left:10px;}
-    .badge{width:52px;height:52px;font-size:24px;}
+  /* ---- MAP VIEW ---- */
+  .map-wrap{max-width:760px;margin:0 auto;padding:20px 20px 60px;position:relative;}
+  .module-card{
+    position:relative;background:var(--card);border:3px solid var(--soil);
+    border-radius:22px;padding:20px 24px;margin-bottom:34px;box-shadow:var(--shadow);
+  }
+  .module-card::after{
+    content:"";position:absolute;left:50%;bottom:-34px;width:4px;height:34px;
+    background:repeating-linear-gradient(to bottom, var(--ink-soft) 0 6px, transparent 6px 12px);
+    transform:translateX(-50%);
+  }
+  .module-card:last-child::after{display:none;}
+  .module-row{display:flex;align-items:center;gap:18px;justify-content:space-between;}
+  .module-row.reverse{flex-direction:row-reverse;text-align:right;}
+  .module-row.reverse .module-text{text-align:right;align-items:flex-end;}
+  .module-icon{
+    width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:28px;border:3px solid var(--soil);flex-shrink:0;position:relative;
+  }
+  .module-icon .badge{
+    position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;
+    background:var(--soil-dark);color:white;font-size:12px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;border:2px solid var(--card);
+    font-family:'Fredoka',sans-serif;
+  }
+  .module-text{display:flex;flex-direction:column;gap:6px;align-items:flex-start;}
+  .module-text h3{margin:0;font-size:18px;color:var(--soil-dark);}
+  .module-text p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.4;max-width:340px;}
+  .enter-btn{
+    margin-top:4px;border:none;color:white;font-weight:700;font-size:14px;
+    padding:9px 18px;border-radius:999px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.2);
+    font-family:'Quicksand',sans-serif;
+  }
+  .enter-btn:active{transform:translateY(2px);box-shadow:none;}
+  .progress-pill{
+    font-size:11.5px;font-weight:700;color:var(--ink-soft);background:#fdeecb;
+    border:1.5px solid var(--ink-soft);border-radius:999px;padding:2px 10px;
   }
 
-  .login-link{position:relative;z-index:5;text-align:center;padding:4px 16px 6px;}
-  .login-link a{display:inline-flex;align-items:center;gap:6px;font-family:'Fredoka',sans-serif;
-    font-weight:600;font-size:14px;color:#fff;background:var(--soil);
-    padding:9px 22px;border-radius:14px;box-shadow:0 3px 0 var(--soil-dark);}
-  .login-link a:active{transform:translateY(2px);box-shadow:none;}
+  /* ---- LEVEL VIEW ---- */
+  .level-wrap{max-width:640px;margin:0 auto;padding:20px 20px 60px;text-align:center;}
+  .back-link{display:inline-flex;align-items:center;gap:6px;color:var(--ink-soft);font-weight:700;font-size:13px;cursor:pointer;margin-bottom:10px;}
+  .back-link:hover{color:var(--soil-dark);}
+  .tag{display:inline-flex;align-items:center;gap:6px;background:var(--c-biru);color:white;font-size:12px;font-weight:700;padding:5px 14px;border-radius:999px;margin-bottom:10px;}
+  .level-title{font-size:26px;font-weight:600;margin:4px 0 6px;color:var(--soil-dark);font-family:'Fredoka',sans-serif;}
+  .level-sub{font-size:14px;color:var(--ink-soft);margin-bottom:18px;}
 
-  .footnote{position:relative;z-index:5;text-align:center;color:var(--ink-soft);font-size:12px;
-    font-weight:600;padding:6px 16px 34px;}
+  .level-dots{display:flex;justify-content:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+  .level-dot{
+    width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:14px;border:2.5px solid var(--soil);background:white;color:var(--soil-dark);cursor:pointer;
+  }
+  .level-dot.done{background:var(--gold);color:var(--soil-dark);}
+  .level-dot.active{background:var(--c-biru);color:white;}
+  .level-dot.locked{opacity:.45;cursor:not-allowed;}
+
+  .game-card{background:var(--card);border:3px solid var(--soil);border-radius:22px;padding:26px;box-shadow:var(--shadow);}
+  .game-card h4{margin:0 0 6px;font-size:16px;color:var(--soil-dark);}
+  .game-card .desc{font-size:13.5px;color:var(--ink-soft);margin-bottom:18px;}
+
+  .grid{display:grid;grid-template-columns:repeat(4,60px);grid-template-rows:repeat(2,60px);gap:6px;justify-content:center;margin:0 auto 18px;}
+  .cell{background:#bde3a8;border:2px solid #8fc474;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .cell.player{font-size:26px;}
+  .cell.goal{font-size:24px;}
+
+  .order-box{
+    min-height:44px;border:2px dashed var(--ink-soft);border-radius:14px;background:#fffdf6;
+    display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 10px;margin:0 auto 18px;
+    max-width:320px;flex-wrap:wrap;font-size:20px;
+  }
+  .order-box .placeholder{color:#c9b79c;font-size:13px;}
+
+  .controls{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:18px;}
+  .ctrl-row{display:flex;gap:8px;}
+  .ctrl-btn{width:52px;height:52px;border-radius:14px;border:none;background:var(--c-biru);color:white;font-size:20px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.2);}
+  .ctrl-btn:active{transform:translateY(2px);box-shadow:none;}
+
+  .action-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+  .btn{border:none;font-weight:700;font-size:14px;padding:10px 20px;border-radius:12px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.2);font-family:'Quicksand',sans-serif;}
+  .btn:active{transform:translateY(2px);box-shadow:none;}
+  .btn.play{background:var(--c-hijau-dark);color:white;}
+  .btn.clear{background:#efe3cb;color:var(--soil-dark);}
+  .btn.redo{background:#efe3cb;color:var(--soil-dark);}
+
+  .success-panel{display:none;margin-top:20px;background:#f2fbea;border:2.5px solid #6ea854;border-radius:18px;padding:20px;}
+  .success-panel.show{display:block;}
+  .success-panel .emoji{font-size:34px;}
+  .success-panel h4{margin:8px 0 4px;color:#3b6b25;}
+  .success-panel p{margin:0 0 14px;font-size:13.5px;color:#4b7a34;}
+  .next-btn{
+    background:var(--soil-dark);color:white;border:none;font-weight:700;font-size:15px;
+    padding:12px 26px;border-radius:999px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.25);
+    font-family:'Fredoka',sans-serif;
+  }
+  .next-btn:active{transform:translateY(2px);box-shadow:none;}
+
+  .module-done-panel{display:none;margin-top:20px;background:#fff6e5;border:2.5px solid var(--gold);border-radius:18px;padding:22px;}
+  .module-done-panel.show{display:block;}
+
+  .toast{
+    position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-20px);
+    background:var(--soil-dark);color:white;font-weight:700;font-size:13px;padding:10px 20px;
+    border-radius:999px;opacity:0;pointer-events:none;transition:all .25s ease;z-index:200;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .loading-screen{
+    position:fixed;inset:0;background:var(--sky-bottom);display:flex;align-items:center;justify-content:center;
+    font-family:'Fredoka',sans-serif;font-size:16px;color:var(--soil-dark);z-index:999;
+  }
 </style>
 </head>
 <body>
 
-  <div class="hero">
-    <div class="eyebrow">🌻 CODING UNPLUGGED UNTUK ANAK</div>
-    <h1><span class="robot">🤖</span> Robo Kebun</h1>
-    <p>Empat petak permainan buat belajar berpikir seperti programmer — tanpa perlu menulis kode satu baris pun!</p>
+<div class="loading-screen" id="loadingScreen">Memuat…</div>
+
+<div class="topbar">
+  <div class="brand"><span class="robot">🤖</span> Robo Kebun</div>
+  <div class="student">
+    <div class="student-info">
+      <div class="avatar" id="avatarInitial">?</div>
+      <div>
+        <div class="student-name" id="studentName">—</div>
+        <div class="role-badge" id="roleBadge">Siswa</div>
+      </div>
+    </div>
+    <button class="logout-btn" id="logoutBtn">⎋ Keluar</button>
   </div>
+</div>
 
-  <div class="map">
-    <div class="vine"></div>
+<div class="breadcrumb" id="breadcrumb"><span>Beranda</span></div>
 
-    <a class="plot" href="games/robo-kebun.html">
-      <div class="badge badge-biru" data-n="1">🧭</div>
-      <div class="plot-body">
-        <h2>Robo Kebun</h2>
-        <p>Tuntun robot lewat kebun pakai panah arah — langkah pertama belajar urutan perintah.</p>
-        <span class="go go-biru">Masuk kebun →</span>
+<div class="view active" id="mapView">
+  <div class="map-wrap" id="mapWrap"></div>
+</div>
+
+<div class="view" id="levelView">
+  <div class="level-wrap">
+    <div class="back-link" id="backToMap">← Kembali ke peta</div>
+    <div class="tag" id="levelTag">CODING UNPLUGGED</div>
+    <div class="level-title" id="levelModuleTitle">Robo Kebun</div>
+    <div class="level-sub" id="levelModuleSub">Susun urutan panah buat nuntun robot sampai ke bendera.</div>
+
+    <div class="level-dots" id="levelDots"></div>
+
+    <div class="game-card">
+      <h4 id="gameTitle">Kebun 1</h4>
+      <div class="desc" id="gameDesc">Tekan tombol panah buat menambah langkah, lalu jalankan urutannya.</div>
+
+      <div class="grid" id="grid"></div>
+
+      <div>
+        <div style="font-size:12px;color:var(--ink-soft);font-weight:700;margin-bottom:6px;">📋 Urutan perintah</div>
+        <div class="order-box" id="orderBox"><span class="placeholder">Ketuk panah di bawah…</span></div>
       </div>
-    </a>
 
-    <a class="plot" href="games/robo-kebun-blok.html">
-      <div class="badge badge-hijau" data-n="2">🧩</div>
-      <div class="plot-body">
-        <h2>Robo Kebun — Kode Blok</h2>
-        <p>Susun blok Maju, Belok, dan Ulangi buat mengatur perjalanan robot. Kenalan sama loop!</p>
-        <span class="go go-hijau">Masuk kebun →</span>
+      <div class="controls">
+        <div class="ctrl-row"><button class="ctrl-btn" data-dir="up">↑</button></div>
+        <div class="ctrl-row">
+          <button class="ctrl-btn" data-dir="left">←</button>
+          <button class="ctrl-btn" data-dir="down">↓</button>
+          <button class="ctrl-btn" data-dir="right">→</button>
+        </div>
       </div>
-    </a>
 
-    <a class="plot" href="games/ladang-pola.html">
-      <div class="badge badge-ungu" data-n="3">🌼</div>
-      <div class="plot-body">
-        <h2>Ladang Pola</h2>
-        <p>Amati urutan warna bunga, lalu tebak bunga yang kosong sesuai polanya.</p>
-        <span class="go go-ungu">Masuk kebun →</span>
+      <div class="action-row">
+        <button class="btn play" id="runBtn">▶ Jalankan</button>
+        <button class="btn clear" id="clearBtn">⌫ Hapus</button>
+        <button class="btn redo" id="resetBtn">↺ Ulangi</button>
       </div>
-    </a>
 
-    <a class="plot" href="games/aktivitas-interaktif.html">
-      <div class="badge badge-oranye" data-n="4">🎲</div>
-      <div class="plot-body">
-        <h2>Aktivitas Interaktif</h2>
-        <p>Empat mini-game seru: Kode Baris, Warna Angka, dan lainnya, semua dalam satu petak.</p>
-        <span class="go go-oranye">Masuk kebun →</span>
+      <div class="success-panel" id="successPanel">
+        <div class="emoji">🎉</div>
+        <h4>Mantap, berhasil!</h4>
+        <p id="successText">Robot sampai di bendera. Siap lanjut ke level berikutnya?</p>
+        <button class="next-btn" id="nextLevelBtn">Lanjut ke Level 2 →</button>
       </div>
-    </a>
 
-    <a class="plot" href="games/matematika.html">
-      <div class="badge badge-merah" data-n="5">🧮</div>
-      <div class="plot-body">
-        <h2>Koding Matematika</h2>
-        <p>Timbang baju berwarna dan pecahkan soal tambah, kurang, kali, dan bagi.</p>
-        <span class="go go-merah">Masuk kebun →</span>
+      <div class="module-done-panel" id="moduleDonePanel">
+        <div class="emoji">🏆</div>
+        <h4 id="moduleDoneTitle">Modul selesai!</h4>
+        <p id="moduleDoneText" style="font-size:13.5px;color:var(--ink-soft);margin:4px 0 14px;">Kerja bagus menyelesaikan semua level di modul ini.</p>
+        <button class="next-btn" id="nextModuleBtn">Lanjut ke Modul Berikutnya →</button>
       </div>
-    </a>
+    </div>
   </div>
+</div>
 
-  <div class="login-link" id="loginArea">
-    <a href="login.html">🔑 Masuk</a>
-  </div>
+<div class="toast" id="toast"></div>
 
-  <div class="footnote">© 2026 DEE 4 MEREMBU • All Rights Reserved</div>
+<script>
+/* ===================== SESI LOGIN ===================== */
+/* Halaman ini WAJIB diakses setelah login lewat login.html,
+   yang menyimpan sessionStorage 'robokebun_user' = { role, user }. */
 
-  <script>
-    (function () {
-      var raw = sessionStorage.getItem('robokebun_user');
-      if (!raw) return;
-      try {
-        var session = JSON.parse(raw);
-        var nama = (session.user && session.user.Nama) ? session.user.Nama : session.user.Username;
-        var area = document.getElementById('loginArea');
-        area.innerHTML =
-          '<span style="font-weight:700;color:var(--soil-dark);margin-right:10px;">Halo, ' + nama + '</span>' +
-          '<a href="#" id="logoutBtn" style="background:var(--c-merah-dark);">Keluar</a>';
-        document.getElementById('logoutBtn').addEventListener('click', function (e) {
-          e.preventDefault();
-          sessionStorage.removeItem('robokebun_user');
-          window.location.href = 'login.html';
-        });
-      } catch (err) {}
-    })();
-  </script>
+const SESSION_KEY = 'robokebun_user';
 
+function getSession(){
+  try{
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+
+const session = getSession();
+
+if(!session){
+  // Belum login → lempar balik ke halaman login
+  window.location.href = 'login.html';
+} else if(session.role === 'guru'){
+  // Guru tidak pakai halaman siswa ini → arahkan ke dashboard guru
+  window.location.href = 'dashboard-guru.html';
+} else {
+  document.getElementById('loadingScreen').style.display = 'none';
+  initStudentApp(session);
+}
+
+function initStudentApp(session){
+  const displayName = (session.user && (session.user.name || session.user.username || session.user.nama)) || 'Siswa';
+  document.getElementById('studentName').textContent = displayName;
+  document.getElementById('avatarInitial').textContent = displayName.trim().charAt(0).toUpperCase() || 'S';
+  document.getElementById('roleBadge').textContent = 'Siswa';
+
+  /* ===================== LOGOUT ===================== */
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    const ok = confirm(`Yakin mau keluar dari akun ${displayName}?`);
+    if(ok){
+      sessionStorage.removeItem(SESSION_KEY);
+      window.location.href = 'login.html';
+    }
+  });
+
+  /* ===================== DATA MODUL ===================== */
+  const MODULES = [
+    { id:'m1', color:'var(--c-biru)', icon:'🧭', tag:'CODING UNPLUGGED', name:'Robo Kebun',
+      desc:'Tuntun robot lewat kebun pakai panah arah — langkah pertama belajar urutan perintah.',
+      sub:'Susun urutan panah buat nuntun robot sampai ke bendera.', levels:6 },
+    { id:'m2', color:'var(--c-hijau)', icon:'🧩', tag:'CODING UNPLUGGED', name:'Robo Kebun — Kode Blok',
+      desc:'Susun blok Maju, Belok, dan Ulangi buat mengatur perjalanan robot. Kenalan sama loop!',
+      sub:'Susun blok perintah untuk memandu robot, termasuk blok Ulangi (loop).', levels:5 },
+    { id:'m3', color:'var(--c-ungu)', icon:'🌸', tag:'POLA & LOGIKA', name:'Ladang Pola',
+      desc:'Amati urutan warna bunga, lalu tebak bunga yang kosong sesuai polanya.',
+      sub:'Amati pola bunga dan lengkapi bagian yang kosong.', levels:4 },
+    { id:'m4', color:'var(--c-oranye)', icon:'🎲', tag:'MINI GAME', name:'Aktivitas Interaktif',
+      desc:'Empat mini-game seru: Kode Baris, Warna Angka, dan lainnya, semua dalam satu petak.',
+      sub:'Coba empat mini-game seru satu per satu.', levels:4 },
+    { id:'m5', color:'var(--c-merah)', icon:'🧮', tag:'MATEMATIKA', name:'Koding Matematika',
+      desc:'Timbang baju berwarna dan pecahkan soal tambah, kurang, kali, dan bagi.',
+      sub:'Pecahkan soal matematika sambil mengumpulkan bintang.', levels:5 },
+  ];
+
+  /* progres per siswa disimpan terpisah di sessionStorage supaya tidak
+     tercampur antar akun (kunci pakai username) */
+  const PROGRESS_KEY = 'robokebun_progress_' + (session.user && (session.user.username || session.user.name) || 'guest');
+
+  function loadProgress(){
+    try{
+      const raw = sessionStorage.getItem(PROGRESS_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    const fresh = {};
+    MODULES.forEach(m => fresh[m.id] = { completedLevels: [], current: 1 });
+    return fresh;
+  }
+  function saveProgress(){
+    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  }
+
+  let progress = loadProgress();
+  MODULES.forEach(m => { if(!progress[m.id]) progress[m.id] = { completedLevels: [], current: 1 }; });
+
+  let state = { moduleIndex: 0, level: 1, steps: [] };
+
+  /* ===================== RENDER MAP ===================== */
+  const mapWrap = document.getElementById('mapWrap');
+  function renderMap(){
+    mapWrap.innerHTML = '';
+    MODULES.forEach((m, i) => {
+      const p = progress[m.id];
+      const doneCount = p.completedLevels.length;
+      const card = document.createElement('div');
+      card.className = 'module-card';
+      card.innerHTML = `
+        <div class="module-row ${i % 2 === 1 ? 'reverse' : ''}">
+          <div class="module-icon" style="background:${m.color}">
+            ${m.icon}
+            <div class="badge">${i+1}</div>
+          </div>
+          <div class="module-text">
+            <h3>${m.name}</h3>
+            <p>${m.desc}</p>
+            <span class="progress-pill">${doneCount}/${m.levels} level selesai</span>
+            <button class="enter-btn" style="background:${m.color}">Masuk kebun →</button>
+          </div>
+        </div>`;
+      card.querySelector('.enter-btn').addEventListener('click', () => enterModule(i));
+      mapWrap.appendChild(card);
+    });
+  }
+
+  /* ===================== NAVIGASI VIEW ===================== */
+  const levelView = document.getElementById('levelView');
+  const mapView = document.getElementById('mapView');
+  const breadcrumb = document.getElementById('breadcrumb');
+
+  function enterModule(index, level){
+    state.moduleIndex = index;
+    const m = MODULES[index];
+    const p = progress[m.id];
+    state.level = level || Math.min(p.current, m.levels);
+    state.steps = [];
+    showLevelView();
+  }
+
+  function showMapView(){
+    mapView.classList.add('active');
+    levelView.classList.remove('active');
+    breadcrumb.innerHTML = `<span>Beranda</span>`;
+    renderMap();
+  }
+
+  function showLevelView(){
+    mapView.classList.remove('active');
+    levelView.classList.add('active');
+    renderLevel();
+  }
+
+  document.getElementById('backToMap').addEventListener('click', showMapView);
+
+  function renderLevel(){
+    const m = MODULES[state.moduleIndex];
+    const p = progress[m.id];
+
+    breadcrumb.innerHTML = `<span>Beranda</span> · <span class="current">${m.name}</span>`;
+    document.getElementById('levelTag').textContent = m.tag;
+    document.getElementById('levelTag').style.background = m.color;
+    document.getElementById('levelModuleTitle').textContent = m.name;
+    document.getElementById('levelModuleSub').textContent = m.sub;
+    document.getElementById('gameTitle').textContent = `Kebun ${state.level}`;
+    document.getElementById('gameDesc').textContent = 'Tekan tombol panah buat menambah langkah, lalu jalankan urutannya.';
+
+    const dotsWrap = document.getElementById('levelDots');
+    dotsWrap.innerHTML = '';
+    for(let lv=1; lv<=m.levels; lv++){
+      const dot = document.createElement('div');
+      const isDone = p.completedLevels.includes(lv);
+      const isActive = lv === state.level;
+      const isLocked = lv > p.current;
+      dot.className = 'level-dot' + (isDone? ' done':'') + (isActive? ' active':'') + (isLocked? ' locked':'');
+      dot.textContent = isDone ? '✓' : lv;
+      dot.addEventListener('click', () => {
+        if(isLocked){ showToast('Selesaikan level sebelumnya dulu ya!'); return; }
+        state.level = lv;
+        state.steps = [];
+        renderLevel();
+      });
+      dotsWrap.appendChild(dot);
+    }
+
+    document.getElementById('successPanel').classList.remove('show');
+    document.getElementById('moduleDonePanel').classList.remove('show');
+    state.steps = [];
+    renderGrid();
+    renderOrderBox();
+  }
+
+  /* ---- mini game robot (contoh fungsional) ---- */
+  const grid = document.getElementById('grid');
+  const orderBox = document.getElementById('orderBox');
+  const GOAL = 3;
+
+  function renderGrid(highlightPos){
+    grid.innerHTML = '';
+    for(let i=0;i<8;i++){
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      const pos = (highlightPos !== undefined) ? highlightPos : 0;
+      if(i === pos){ cell.classList.add('player'); cell.textContent = '🤖'; }
+      else if(i === GOAL){ cell.classList.add('goal'); cell.textContent = '🚩'; }
+      grid.appendChild(cell);
+    }
+  }
+  function renderOrderBox(){
+    if(state.steps.length === 0){
+      orderBox.innerHTML = '<span class="placeholder">Ketuk panah di bawah…</span>';
+      return;
+    }
+    const symbols = { up:'↑', down:'↓', left:'←', right:'→' };
+    orderBox.innerHTML = state.steps.map(s => symbols[s]).join(' ');
+  }
+
+  document.querySelectorAll('.ctrl-btn').forEach(btn => {
+    btn.addEventListener('click', () => { state.steps.push(btn.dataset.dir); renderOrderBox(); });
+  });
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    if(state.steps.length){ state.steps.pop(); renderOrderBox(); }
+  });
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    state.steps = []; renderOrderBox(); renderGrid();
+  });
+  document.getElementById('runBtn').addEventListener('click', () => {
+    let pos = 0;
+    state.steps.forEach(dir => { if(dir === 'right') pos++; if(dir === 'left') pos--; });
+    renderGrid(Math.max(0, Math.min(7, pos)));
+    if(pos === GOAL){ completeLevel(); } else { showToast('Belum sampai bendera, coba lagi!'); }
+  });
+
+  /* ---- selesai level + navigasi lanjut ---- */
+  function completeLevel(){
+    const m = MODULES[state.moduleIndex];
+    const p = progress[m.id];
+    if(!p.completedLevels.includes(state.level)) p.completedLevels.push(state.level);
+    p.current = Math.max(p.current, state.level + 1);
+    saveProgress();
+
+    const isLastLevel = state.level >= m.levels;
+    const isLastModule = state.moduleIndex >= MODULES.length - 1;
+
+    if(!isLastLevel){
+      document.getElementById('successPanel').classList.add('show');
+      document.getElementById('nextLevelBtn').textContent = `Lanjut ke Level ${state.level + 1} →`;
+    } else if(!isLastModule){
+      document.getElementById('moduleDoneTitle').textContent = `${m.name} selesai!`;
+      document.getElementById('moduleDoneText').textContent = `Kerja bagus! Siap lanjut ke ${MODULES[state.moduleIndex+1].name}?`;
+      document.getElementById('nextModuleBtn').textContent = `Lanjut ke ${MODULES[state.moduleIndex+1].name} →`;
+      document.getElementById('moduleDonePanel').classList.add('show');
+    } else {
+      document.getElementById('moduleDoneTitle').textContent = `Semua modul selesai! 🎉`;
+      document.getElementById('moduleDoneText').textContent = `Kamu sudah menyelesaikan seluruh perjalanan Robo Kebun.`;
+      document.getElementById('nextModuleBtn').textContent = `Kembali ke Beranda`;
+      document.getElementById('moduleDonePanel').classList.add('show');
+    }
+
+    const dotsWrap = document.getElementById('levelDots');
+    [...dotsWrap.children].forEach((dot, idx) => {
+      const lv = idx + 1;
+      dot.classList.remove('locked');
+      if(p.completedLevels.includes(lv)){ dot.classList.add('done'); dot.textContent = '✓'; }
+    });
+  }
+
+  document.getElementById('nextLevelBtn').addEventListener('click', () => {
+    state.level += 1; state.steps = []; renderLevel();
+  });
+  document.getElementById('nextModuleBtn').addEventListener('click', () => {
+    const isLastModule = state.moduleIndex >= MODULES.length - 1;
+    if(isLastModule){ showMapView(); } else { enterModule(state.moduleIndex + 1, 1); }
+  });
+
+  /* ===================== TOAST ===================== */
+  function showToast(msg){
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  renderMap();
+}
+</script>
 </body>
 </html>
