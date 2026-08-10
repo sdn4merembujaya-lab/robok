@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Guru — Robo Kebun</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#ffd9a0;--sky-bottom:#fff3da;
+    --soil:#7a4a2b;--soil-dark:#5e3620;
+    --card:#fffaf0;
+    --ink:#3a2f2a;--ink-soft:#7a6a5c;
+    --c-biru:#4a9fc9;--c-biru-dark:#2f7796;
+    --c-hijau:#5ba64a;--c-hijau-dark:#3f7d34;
+    --c-ungu:#8b5fbf;
+    --c-oranye:#e08a2e;
+    --c-merah:#c0405a;
+    --gold:#f0b429;
+    --shadow:0 4px 0 rgba(90,54,32,0.15);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;font-family:'Quicksand',sans-serif;color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 45%, #f3e6c4 100%);
+    min-height:100vh;
+  }
+  h1,h3,h4,.display{font-family:'Fredoka',sans-serif;}
+
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 24px;background:var(--card);border-bottom:3px solid var(--soil);
+    position:sticky;top:0;z-index:50;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:18px;color:var(--soil-dark);}
+  .brand .robot{font-size:22px;}
+  .who{display:flex;align-items:center;gap:12px;}
+  .who-info{display:flex;align-items:center;gap:10px;background:#fdeecb;border:2px solid var(--soil);border-radius:999px;padding:5px 14px 5px 6px;}
+  .avatar{
+    width:32px;height:32px;border-radius:50%;background:var(--c-oranye);
+    display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;
+    border:2px solid var(--soil);font-family:'Fredoka',sans-serif;
+  }
+  .who-name{font-weight:700;font-size:14px;color:var(--soil-dark);}
+  .role-badge{font-size:10.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+  .logout-btn{
+    display:flex;align-items:center;gap:6px;background:#fff;border:2px solid var(--soil);
+    color:var(--soil-dark);font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;
+    cursor:pointer;box-shadow:var(--shadow);font-family:'Quicksand',sans-serif;
+  }
+  .logout-btn:hover{background:#fff3e0;}
+  .logout-btn:active{transform:translateY(2px);box-shadow:none;}
+
+  .wrap{max-width:920px;margin:0 auto;padding:26px 20px 60px;}
+  .page-title{font-size:24px;color:var(--soil-dark);margin:0 0 4px;}
+  .page-sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 22px;}
+
+  .stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px;}
+  .stat-card{
+    flex:1;min-width:150px;background:var(--card);border:3px solid var(--soil);border-radius:18px;
+    padding:16px 18px;box-shadow:var(--shadow);
+  }
+  .stat-card .num{font-family:'Fredoka',sans-serif;font-size:26px;color:var(--soil-dark);}
+  .stat-card .lbl{font-size:12.5px;color:var(--ink-soft);font-weight:700;}
+
+  .section-title{font-size:16px;color:var(--soil-dark);margin:0 0 12px;font-family:'Fredoka',sans-serif;}
+
+  .table-card{background:var(--card);border:3px solid var(--soil);border-radius:20px;padding:8px;box-shadow:var(--shadow);overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;min-width:560px;}
+  th,td{text-align:left;padding:12px 14px;font-size:13.5px;}
+  thead th{color:var(--ink-soft);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.03em;border-bottom:2px solid #eadcb9;}
+  tbody tr{border-bottom:1px solid #f1e6cb;}
+  tbody tr:last-child{border-bottom:none;}
+  .student-cell{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--soil-dark);}
+  .mini-avatar{
+    width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    color:white;font-size:12px;font-weight:700;font-family:'Fredoka',sans-serif;
+  }
+  .bar-wrap{display:flex;align-items:center;gap:8px;}
+  .bar-track{flex:1;height:8px;border-radius:999px;background:#eee0c2;overflow:hidden;min-width:80px;}
+  .bar-fill{height:100%;border-radius:999px;}
+  .bar-pct{font-size:11.5px;color:var(--ink-soft);font-weight:700;min-width:32px;text-align:right;}
+
+  .empty{
+    text-align:center;padding:40px 20px;color:var(--ink-soft);font-size:13.5px;
+  }
+
+  .loading-screen{
+    position:fixed;inset:0;background:var(--sky-bottom);display:flex;align-items:center;justify-content:center;
+    font-family:'Fredoka',sans-serif;font-size:16px;color:var(--soil-dark);z-index:999;
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">Memuat…</div>
+
+<div class="topbar">
+  <div class="brand"><span class="robot">🤖</span> Robo Kebun</div>
+  <div class="who">
+    <div class="who-info">
+      <div class="avatar" id="avatarInitial">?</div>
+      <div>
+        <div class="who-name" id="teacherName">—</div>
+        <div class="role-badge">Guru</div>
+      </div>
+    </div>
+    <button class="logout-btn" id="logoutBtn">⎋ Keluar</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <h1 class="page-title">Dashboard Guru</h1>
+  <p class="page-sub">Pantau progres belajar siswa di semua modul Robo Kebun.</p>
+
+  <div class="stat-row" id="statRow"></div>
+
+  <h3 class="section-title">Progres Siswa</h3>
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Siswa</th>
+          <th>Modul Aktif</th>
+          <th>Progres Keseluruhan</th>
+          <th>Level Selesai</th>
+        </tr>
+      </thead>
+      <tbody id="studentRows"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const SESSION_KEY = 'robokebun_user';
+
+function getSession(){
+  try{
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+
+const session = getSession();
+
+if(!session){
+  window.location.href = 'login.html';
+} else if(session.role !== 'guru'){
+  // Siswa tidak boleh masuk dashboard guru
+  window.location.href = 'index.html';
+} else {
+  document.getElementById('loadingScreen').style.display = 'none';
+  initTeacherDashboard(session);
+}
+
+function initTeacherDashboard(session){
+  const displayName = (session.user && (session.user.name || session.user.username || session.user.nama)) || 'Guru';
+  document.getElementById('teacherName').textContent = displayName;
+  document.getElementById('avatarInitial').textContent = displayName.trim().charAt(0).toUpperCase() || 'G';
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    const ok = confirm(`Yakin mau keluar dari akun ${displayName}?`);
+    if(ok){
+      sessionStorage.removeItem(SESSION_KEY);
+      window.location.href = 'login.html';
+    }
+  });
+
+  const MODULES = [
+    { id:'m1', name:'Robo Kebun', color:'var(--c-biru)', levels:6 },
+    { id:'m2', name:'Kode Blok', color:'var(--c-hijau)', levels:5 },
+    { id:'m3', name:'Ladang Pola', color:'var(--c-ungu)', levels:4 },
+    { id:'m4', name:'Aktivitas Interaktif', color:'var(--c-oranye)', levels:4 },
+    { id:'m5', name:'Koding Matematika', color:'var(--c-merah)', levels:5 },
+  ];
+  const totalLevels = MODULES.reduce((s,m)=>s+m.levels,0);
+
+  /* ===== Kumpulkan progres semua siswa yang pernah login di perangkat ini =====
+     Progres siswa disimpan index.html dengan kunci "robokebun_progress_<username>".
+     Ini contoh ringan untuk demo lokal; di versi produksi, ganti dengan fetch
+     data progres siswa dari Apps Script/Sheet yang sama seperti proses login. */
+  function collectStudentsFromSession(){
+    const students = [];
+    for(let i=0; i<sessionStorage.length; i++){
+      const key = sessionStorage.key(i);
+      if(key && key.startsWith('robokebun_progress_')){
+        const username = key.replace('robokebun_progress_', '');
+        let data = {};
+        try{ data = JSON.parse(sessionStorage.getItem(key)); }catch(e){}
+        students.push({ username, progress: data });
+      }
+    }
+    return students;
+  }
+
+  const students = collectStudentsFromSession();
+
+  /* ===== Statistik ringkas ===== */
+  const statRow = document.getElementById('statRow');
+  const activeModuleCount = MODULES.length;
+  statRow.innerHTML = `
+    <div class="stat-card"><div class="num">${students.length}</div><div class="lbl">Siswa aktif di perangkat ini</div></div>
+    <div class="stat-card"><div class="num">${activeModuleCount}</div><div class="lbl">Modul tersedia</div></div>
+    <div class="stat-card"><div class="num">${totalLevels}</div><div class="lbl">Total level</div></div>
+  `;
+
+  /* ===== Tabel progres ===== */
+  const tbody = document.getElementById('studentRows');
+
+  if(students.length === 0){
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty">Belum ada data siswa di perangkat ini.<br>Progres akan muncul begitu siswa login &amp; mulai bermain lewat browser ini.</div></td></tr>`;
+  } else {
+    tbody.innerHTML = students.map(s => {
+      let doneLevels = 0;
+      let activeModuleName = '—';
+      MODULES.forEach(m => {
+        const p = s.progress[m.id];
+        if(p){
+          doneLevels += (p.completedLevels || []).length;
+          if(activeModuleName === '—' && (p.completedLevels||[]).length < m.levels){
+            activeModuleName = m.name;
+          }
+        }
+      });
+      const pct = Math.round((doneLevels / totalLevels) * 100);
+      const initial = s.username.trim().charAt(0).toUpperCase();
+      return `
+        <tr>
+          <td>
+            <div class="student-cell">
+              <div class="mini-avatar" style="background:var(--c-biru)">${initial}</div>
+              ${s.username}
+            </div>
+          </td>
+          <td>${activeModuleName}</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:var(--c-hijau-dark)"></div></div>
+              <div class="bar-pct">${pct}%</div>
+            </div>
+          </td>
+          <td>${doneLevels}/${totalLevels}</td>
+        </tr>`;
+    }).join('');
+  }
+}
+</script>
+</body>
+</html>
