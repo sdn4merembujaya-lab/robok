@@ -5,7 +5,9 @@
 <title>Dashboard Guru — Robo Kebun</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
     --sky-top:#ffd9a0;--sky-bottom:#fff3da;
@@ -14,6 +16,7 @@
     --ink:#3a2f2a;--ink-soft:#7a6a5c;
     --c-merah-dark:#b93b46;
     --c-hijau:#5ba64a;--c-hijau-dark:#3f7d34;
+    --gold:#c9962c;
   }
   *{box-sizing:border-box;}
   body{
@@ -24,7 +27,7 @@
   h1,.display{font-family:'Fredoka',sans-serif;}
   a{text-decoration:none;}
 
-  .topbar{max-width:680px;margin:0 auto 22px;display:flex;align-items:center;
+  .topbar{max-width:760px;margin:0 auto 22px;display:flex;align-items:center;
     justify-content:space-between;flex-wrap:wrap;gap:10px;}
   .topbar .hello{font-weight:700;color:var(--soil-dark);font-size:15px;}
   .topbar a.logout{background:var(--c-merah-dark);color:#fff;font-family:'Fredoka',sans-serif;
@@ -41,11 +44,11 @@
     border-radius:12px;cursor:pointer;box-shadow:0 3px 0 var(--c-hijau-dark);}
   .btn-refresh:active{transform:translateY(2px);box-shadow:none;}
 
-  .card{max-width:680px;margin:0 auto 18px;background:var(--card);border:4px solid var(--soil);
+  .card{max-width:760px;margin:0 auto 18px;background:var(--card);border:4px solid var(--soil);
     border-radius:22px;padding:22px;box-shadow:0 8px 0 rgba(0,0,0,.08);text-align:center;
     color:var(--ink-soft);font-weight:600;}
 
-  .search-wrap{max-width:680px;margin:0 auto 12px;}
+  .search-wrap{max-width:760px;margin:0 auto 12px;}
   #searchInput{width:100%;padding:11px 14px;border-radius:12px;border:2px solid #ddd0b8;
     font-family:'Quicksand',sans-serif;font-weight:600;font-size:14px;outline:none;}
   #searchInput:focus{border-color:var(--c-hijau);}
@@ -56,6 +59,33 @@
   .badge-cukup{background:#ffe4c2;color:#b9711a;}
   .badge-kurang{background:#fde2e1;color:#b93b46;}
   .badge-buruk{background:#f5d2d0;color:#8a1f27;}
+
+  .btn-sert{background:var(--gold);color:#fff;border:none;font-family:'Fredoka',sans-serif;
+    font-weight:600;font-size:12px;padding:7px 12px;border-radius:10px;cursor:pointer;
+    box-shadow:0 2px 0 #9c7017;white-space:nowrap;}
+  .btn-sert:active{transform:translateY(2px);box-shadow:none;}
+  .btn-sert:disabled{background:#ddd0b8;color:#8a7a68;box-shadow:none;cursor:default;}
+
+  /* ==== template sertifikat: disembunyikan dari layar, hanya dipakai untuk di-capture ==== */
+  #sertifikatWrap{position:fixed;left:-99999px;top:0;}
+  #sertifikatTemplate{
+    width:1120px;height:800px;background:#fffdf6;
+    border:14px solid var(--gold);outline:3px solid var(--soil);outline-offset:-24px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:40px;font-family:'Quicksand',sans-serif;
+  }
+  #sertifikatTemplate .label-top{font-family:'Fredoka',sans-serif;letter-spacing:4px;
+    font-size:16px;color:var(--c-hijau-dark);font-weight:700;text-transform:uppercase;}
+  #sertifikatTemplate .nomor{font-size:12.5px;color:var(--ink-soft);font-weight:700;margin-top:4px;}
+  #sertifikatTemplate h2{font-family:'Fredoka',sans-serif;font-size:44px;color:var(--soil-dark);margin:8px 0 22px;}
+  #sertifikatTemplate .diberikan{font-size:15px;color:var(--ink-soft);font-weight:600;}
+  #sertifikatTemplate .nama-siswa{font-family:'Great Vibes',cursive;font-size:64px;color:var(--gold);margin:14px 0;}
+  #sertifikatTemplate .deskripsi{max-width:760px;font-size:16px;font-weight:600;color:var(--ink);line-height:1.6;margin:8px 0 26px;}
+  #sertifikatTemplate .deskripsi b{color:var(--c-hijau-dark);}
+  #sertifikatTemplate .footer-row{display:flex;justify-content:space-between;width:100%;max-width:820px;margin-top:20px;font-size:13px;color:var(--ink-soft);font-weight:700;}
+  #sertifikatTemplate .footer-row .kepsek{border-top:2px solid var(--soil);padding-top:6px;min-width:220px;}
+  #sertifikatTemplate .footer-row .kepsek .nama-kepsek{font-size:15px;color:var(--ink);margin-top:34px;}
+  #sertifikatTemplate .footer-row .tempat-tanggal{padding-top:44px;min-width:220px;text-align:right;}
 </style>
 </head>
 <body>
@@ -76,7 +106,7 @@
 
   <div class="card" id="loadingCard">Memuat data siswa...</div>
 
-  <div id="tableWrap" style="display:none;max-width:680px;margin:0 auto;">
+  <div id="tableWrap" style="display:none;max-width:760px;margin:0 auto;overflow-x:auto;">
     <table id="nilaiTable" style="width:100%;border-collapse:collapse;background:var(--card);
       border:4px solid var(--soil);border-radius:16px;overflow:hidden;">
       <thead>
@@ -85,10 +115,34 @@
           <th style="padding:10px 12px;text-align:left;">Nama Sekolah</th>
           <th style="padding:10px 12px;text-align:center;">Skor</th>
           <th style="padding:10px 12px;text-align:center;">Predikat</th>
+          <th style="padding:10px 12px;text-align:center;">Sertifikat</th>
         </tr>
       </thead>
       <tbody id="nilaiBody"></tbody>
     </table>
+  </div>
+
+  <!-- Template sertifikat tersembunyi — dipakai html2canvas untuk di-capture jadi PDF -->
+  <div id="sertifikatWrap">
+    <div id="sertifikatTemplate">
+      <div class="label-top">Robo Kebun</div>
+      <div class="nomor" id="sertNomor">Nomor: -</div>
+      <h2>Sertifikat Penghargaan</h2>
+      <div class="diberikan">Diberikan kepada</div>
+      <div class="nama-siswa" id="sertNama">Nama Siswa</div>
+      <div class="deskripsi">
+        Atas keberhasilannya menyelesaikan seluruh kegiatan berkebun di <b>Robo Kebun</b>
+        dengan skor <b id="sertSkor">0</b> dan predikat <b id="sertPredikat">-</b>.
+      </div>
+      <div class="footer-row">
+        <div class="kepsek">
+          Kepala Sekolah,
+          <div class="nama-kepsek" id="sertKepsek">-</div>
+          <div id="sertNip">NIP. -</div>
+        </div>
+        <div class="tempat-tanggal" id="sertTempatTanggal">-</div>
+      </div>
+    </div>
   </div>
 
 <script>
@@ -115,8 +169,10 @@
 
   // ==== ambil & tampilkan daftar siswa + skor ====
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCJEpXP9XuKDik6Wbwk78Jq0jkd4Yp394DXskwYdFR_Dnx3zdd8_q54yav1ZPIOn5wAg/exec';
+  const BATAS_SKOR_SERTIFIKAT = 76;
 
   let semuaSiswa = [];
+  let dataSekolahCache = null; // cache nomor surat / kepsek / nip / tempat, sekali ambil dipakai berulang
 
   function getPredikat(skor){
     if (skor >= 91) return { label: 'Sangat Baik', kelas: 'badge-sangat' };
@@ -130,18 +186,33 @@
     const tbody = document.getElementById('nilaiBody');
     tbody.innerHTML = '';
     if (list.length === 0){
-      tbody.innerHTML = '<tr><td colspan="4" style="padding:16px;text-align:center;color:var(--ink-soft);">Belum ada data siswa.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" style="padding:16px;text-align:center;color:var(--ink-soft);">Belum ada data siswa.</td></tr>';
       return;
     }
     list.forEach(function(s){
       const tr = document.createElement('tr');
       tr.style.borderTop = '1px solid #eee0c8';
       const pred = getPredikat(s.skor);
+      const bolehSertifikat = s.skor >= BATAS_SKOR_SERTIFIKAT;
+
+      const tdSert = document.createElement('td');
+      tdSert.style.padding = '9px 12px';
+      tdSert.style.textAlign = 'center';
+      const btn = document.createElement('button');
+      btn.className = 'btn-sert';
+      btn.textContent = bolehSertifikat ? '🏆 Unduh' : 'Belum layak';
+      btn.disabled = !bolehSertifikat;
+      if (bolehSertifikat){
+        btn.addEventListener('click', function(){ unduhSertifikat(s, btn); });
+      }
+      tdSert.appendChild(btn);
+
       tr.innerHTML =
         '<td style="padding:9px 12px;">' + s.nama + '</td>' +
         '<td style="padding:9px 12px;">' + (s.namaSekolah || '-') + '</td>' +
         '<td style="padding:9px 12px;text-align:center;font-weight:700;">' + s.skor + '</td>' +
         '<td style="padding:9px 12px;text-align:center;"><span class="badge ' + pred.kelas + '">' + pred.label + '</span></td>';
+      tr.appendChild(tdSert);
       tbody.appendChild(tr);
     });
   }
@@ -179,6 +250,66 @@
     });
     renderTabel(hasil);
   });
+
+  // ==== SERTIFIKAT ====
+
+  // Ambil nomor surat / nama kepsek / nip / tempat-tanggal dari Apps Script (action: 'sertifikat'), sekali saja lalu dicache
+  async function ambilDataSekolah(){
+    if (dataSekolahCache) return dataSekolahCache;
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'sertifikat' })
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.message || 'Gagal mengambil data sertifikat');
+    // ambil data sekolah dari baris data manapun (nilainya sama untuk semua siswa)
+    const satu = (json.data && json.data[0]) || {};
+    dataSekolahCache = {
+      nomorSurat: satu.nomorSurat || '-',
+      namaKepsek: satu.namaKepsek || '-',
+      nip: satu.nip || '-',
+      tempatTanggal: satu.tempatTanggal || '-',
+    };
+    return dataSekolahCache;
+  }
+
+  async function unduhSertifikat(siswa, btnEl){
+    const teksAsli = btnEl.textContent;
+    btnEl.disabled = true;
+    btnEl.textContent = '⏳...';
+    try{
+      const sekolah = await ambilDataSekolah();
+      const pred = getPredikat(siswa.skor);
+
+      document.getElementById('sertNomor').textContent = 'Nomor: ' + sekolah.nomorSurat;
+      document.getElementById('sertNama').textContent = siswa.nama;
+      document.getElementById('sertSkor').textContent = siswa.skor;
+      document.getElementById('sertPredikat').textContent = pred.label;
+      document.getElementById('sertKepsek').textContent = sekolah.namaKepsek;
+      document.getElementById('sertNip').textContent = 'NIP. ' + sekolah.nip;
+      document.getElementById('sertTempatTanggal').textContent = sekolah.tempatTanggal;
+
+      if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+        throw new Error('Library PDF belum termuat, cek koneksi internet.');
+      }
+
+      const tpl = document.getElementById('sertifikatTemplate');
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+      const canvas = await html2canvas(tpl, { scale: 2, backgroundColor: '#fffdf6', useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width, canvas.height] });
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save('Sertifikat-' + siswa.nama.replace(/\s+/g, '_') + '.pdf');
+    }catch(err){
+      alert('Gagal membuat sertifikat: ' + err.message);
+      console.error(err);
+    }finally{
+      btnEl.disabled = false;
+      btnEl.textContent = teksAsli;
+    }
+  }
 
   muatDaftarSiswa();
 </script>
