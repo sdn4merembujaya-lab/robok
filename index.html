@@ -91,6 +91,12 @@
     .badge{width:52px;height:52px;font-size:24px;}
   }
 
+  .login-link{position:relative;z-index:5;text-align:center;padding:4px 16px 6px;}
+  .login-link a{display:inline-flex;align-items:center;gap:6px;font-family:'Fredoka',sans-serif;
+    font-weight:600;font-size:14px;color:#fff;background:var(--soil);
+    padding:9px 22px;border-radius:14px;box-shadow:0 3px 0 var(--soil-dark);}
+  .login-link a:active{transform:translateY(2px);box-shadow:none;}
+
   .footnote{position:relative;z-index:5;text-align:center;color:var(--ink-soft);font-size:12px;
     font-weight:600;padding:6px 16px 34px;}
 </style>
@@ -152,7 +158,31 @@
     </a>
   </div>
 
+  <div class="login-link" id="loginArea">
+    <a href="login.html">🔑 Masuk</a>
+  </div>
+
   <div class="footnote">© 2026 DEE 4 MEREMBU • All Rights Reserved</div>
+
+  <script>
+    (function () {
+      var raw = sessionStorage.getItem('robokebun_user');
+      if (!raw) return;
+      try {
+        var session = JSON.parse(raw);
+        var nama = (session.user && session.user.Nama) ? session.user.Nama : session.user.Username;
+        var area = document.getElementById('loginArea');
+        area.innerHTML =
+          '<span style="font-weight:700;color:var(--soil-dark);margin-right:10px;">Halo, ' + nama + '</span>' +
+          '<a href="#" id="logoutBtn" style="background:var(--c-merah-dark);">Keluar</a>';
+        document.getElementById('logoutBtn').addEventListener('click', function (e) {
+          e.preventDefault();
+          sessionStorage.removeItem('robokebun_user');
+          window.location.href = 'login.html';
+        });
+      } catch (err) {}
+    })();
+  </script>
 
 </body>
 </html>

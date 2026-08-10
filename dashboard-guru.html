@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Guru — Robo Kebun</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#ffd9a0;--sky-bottom:#fff3da;
+    --soil:#7a4a2b;--soil-dark:#5e3620;
+    --card:#fffaf0;
+    --ink:#3a2f2a;--ink-soft:#7a6a5c;
+    --c-merah-dark:#b93b46;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;font-family:'Quicksand',sans-serif;color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 45%, #f3e6c4 100%);
+    min-height:100vh;padding:20px 16px 60px;
+  }
+  h1,.display{font-family:'Fredoka',sans-serif;}
+  a{text-decoration:none;}
+
+  .topbar{max-width:680px;margin:0 auto 22px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .topbar .hello{font-weight:700;color:var(--soil-dark);font-size:15px;}
+  .topbar a.logout{background:var(--c-merah-dark);color:#fff;font-family:'Fredoka',sans-serif;
+    font-weight:600;font-size:13.5px;padding:8px 18px;border-radius:12px;
+    box-shadow:0 3px 0 rgba(0,0,0,.15);}
+  .topbar a.logout:active{transform:translateY(2px);box-shadow:none;}
+
+  h1{text-align:center;font-size:clamp(24px,5vw,32px);color:var(--soil-dark);margin:0 0 6px;}
+  .sub{text-align:center;color:var(--ink-soft);font-weight:600;font-size:14px;
+    max-width:520px;margin:0 auto 28px;}
+
+  .card{max-width:680px;margin:0 auto 18px;background:var(--card);border:4px solid var(--soil);
+    border-radius:22px;padding:22px;box-shadow:0 8px 0 rgba(0,0,0,.08);text-align:center;
+    color:var(--ink-soft);font-weight:600;}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="hello" id="helloText">Halo, Guru</span>
+    <a class="logout" href="#" id="logoutBtn">Keluar</a>
+  </div>
+
+  <h1>📊 Dashboard Guru</h1>
+  <p class="sub">Rekap nilai siswa akan tampil di sini.</p>
+
+  <div class="card">
+    Fitur rekap nilai per siswa sedang disiapkan — begini nanti tampilnya
+    setelah game mulai mengirim skor ke sistem.
+  </div>
+
+<script>
+  (function () {
+    var raw = sessionStorage.getItem('robokebun_user');
+    if (!raw) {
+      window.location.href = 'login.html';
+      return;
+    }
+    try {
+      var session = JSON.parse(raw);
+      if (session.role !== 'guru') {
+        window.location.href = 'login.html';
+        return;
+      }
+      var nama = (session.user && session.user.Nama) ? session.user.Nama : session.user.Username;
+      document.getElementById('helloText').textContent = 'Halo, ' + nama;
+    } catch (err) {
+      window.location.href = 'login.html';
+    }
+  })();
+
+  document.getElementById('logoutBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    sessionStorage.removeItem('robokebun_user');
+    window.location.href = 'login.html';
+  });
+</script>
+</body>
+</html>
