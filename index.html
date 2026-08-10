@@ -18,7 +18,7 @@
     --c-oranye:#e08a2e;--c-oranye-dark:#b56b1c;
     --c-merah:#c0405a;--c-merah-dark:#96253c;
     --gold:#f0b429;
-    --err:#c0392b;
+    --ok:#3f7d34; --bad:#c0392b;
     --shadow:0 4px 0 rgba(90,54,32,0.15);
   }
   *{box-sizing:border-box;}
@@ -109,7 +109,7 @@
   .level-wrap{max-width:640px;margin:0 auto;padding:20px 20px 60px;text-align:center;}
   .back-link{display:inline-flex;align-items:center;gap:6px;color:var(--ink-soft);font-weight:700;font-size:13px;cursor:pointer;margin-bottom:10px;}
   .back-link:hover{color:var(--soil-dark);}
-  .tag{display:inline-flex;align-items:center;gap:6px;background:var(--c-biru);color:white;font-size:12px;font-weight:700;padding:5px 14px;border-radius:999px;margin-bottom:10px;}
+  .tag{display:inline-flex;align-items:center;gap:6px;color:white;font-size:12px;font-weight:700;padding:5px 14px;border-radius:999px;margin-bottom:10px;}
   .level-title{font-size:26px;font-weight:600;margin:4px 0 6px;color:var(--soil-dark);font-family:'Fredoka',sans-serif;}
   .level-sub{font-size:14px;color:var(--ink-soft);margin-bottom:18px;}
 
@@ -126,22 +126,22 @@
   .game-card h4{margin:0 0 6px;font-size:16px;color:var(--soil-dark);}
   .game-card .desc{font-size:13.5px;color:var(--ink-soft);margin-bottom:18px;}
 
+  /* maze/blocks shared */
   .grid{display:grid;grid-template-columns:repeat(4,60px);grid-template-rows:repeat(2,60px);gap:6px;justify-content:center;margin:0 auto 18px;}
   .cell{background:#bde3a8;border:2px solid #8fc474;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
   .cell.player{font-size:26px;}
   .cell.goal{font-size:24px;}
-
   .order-box{
     min-height:44px;border:2px dashed var(--ink-soft);border-radius:14px;background:#fffdf6;
     display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 10px;margin:0 auto 18px;
-    max-width:320px;flex-wrap:wrap;font-size:20px;
+    max-width:360px;flex-wrap:wrap;font-size:20px;
   }
   .order-box .placeholder{color:#c9b79c;font-size:13px;}
-
   .controls{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:18px;}
-  .ctrl-row{display:flex;gap:8px;}
-  .ctrl-btn{width:52px;height:52px;border-radius:14px;border:none;background:var(--c-biru);color:white;font-size:20px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.2);}
+  .ctrl-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+  .ctrl-btn{min-width:52px;height:52px;padding:0 14px;border-radius:14px;border:none;background:var(--c-biru);color:white;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.2);font-family:'Quicksand',sans-serif;}
   .ctrl-btn:active{transform:translateY(2px);box-shadow:none;}
+  .ctrl-btn.loop{background:var(--c-ungu-dark);}
 
   .action-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
   .btn{border:none;font-weight:700;font-size:14px;padding:10px 20px;border-radius:12px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.2);font-family:'Quicksand',sans-serif;}
@@ -149,6 +149,34 @@
   .btn.play{background:var(--c-hijau-dark);color:white;}
   .btn.clear{background:#efe3cb;color:var(--soil-dark);}
   .btn.redo{background:#efe3cb;color:var(--soil-dark);}
+
+  /* quiz */
+  .quiz-progress{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px;}
+  .quiz-progress .track{width:160px;height:8px;border-radius:999px;background:#eee0c2;overflow:hidden;}
+  .quiz-progress .fill{height:100%;border-radius:999px;background:var(--c-hijau-dark);}
+  .quiz-progress .lbl{font-size:12px;font-weight:700;color:var(--ink-soft);}
+  .quiz-question{
+    font-size:16px;font-weight:700;color:var(--soil-dark);margin:6px 0 18px;
+    white-space:pre-line;line-height:1.5;
+  }
+  .quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .quiz-options.single{grid-template-columns:1fr;}
+  .quiz-opt{
+    border:2.5px solid var(--soil);background:#fff;border-radius:14px;padding:12px 10px;
+    font-weight:700;font-size:14px;color:var(--soil-dark);cursor:pointer;font-family:'Quicksand',sans-serif;
+  }
+  .quiz-opt:hover{background:#fff3e0;}
+  .quiz-opt.correct{background:#dff2d0;border-color:var(--ok);color:var(--ok);}
+  .quiz-opt.wrong{background:#fbe0dc;border-color:var(--bad);color:var(--bad);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-input-row{display:flex;justify-content:center;gap:10px;margin-bottom:16px;align-items:center;}
+  .quiz-input-row input{
+    width:100px;padding:12px;border-radius:12px;border:2.5px solid var(--soil);font-size:18px;font-weight:700;
+    text-align:center;font-family:'Quicksand',sans-serif;
+  }
+  .quiz-feedback{font-size:13.5px;font-weight:700;min-height:20px;margin-bottom:6px;}
+  .quiz-feedback.ok{color:var(--ok);}
+  .quiz-feedback.bad{color:var(--bad);}
 
   .success-panel{display:none;margin-top:20px;background:#f2fbea;border:2.5px solid #6ea854;border-radius:18px;padding:20px;}
   .success-panel.show{display:block;}
@@ -175,6 +203,10 @@
   .loading-screen{
     position:fixed;inset:0;background:var(--sky-bottom);display:flex;align-items:center;justify-content:center;
     font-family:'Fredoka',sans-serif;font-size:16px;color:var(--soil-dark);z-index:999;
+  }
+
+  @media (max-width:420px){
+    .quiz-options{grid-template-columns:1fr;}
   }
 </style>
 </head>
@@ -207,40 +239,20 @@
     <div class="back-link" id="backToMap">← Kembali ke peta</div>
     <div class="tag" id="levelTag">CODING UNPLUGGED</div>
     <div class="level-title" id="levelModuleTitle">Robo Kebun</div>
-    <div class="level-sub" id="levelModuleSub">Susun urutan panah buat nuntun robot sampai ke bendera.</div>
+    <div class="level-sub" id="levelModuleSub">—</div>
 
     <div class="level-dots" id="levelDots"></div>
 
     <div class="game-card">
-      <h4 id="gameTitle">Kebun 1</h4>
-      <div class="desc" id="gameDesc">Tekan tombol panah buat menambah langkah, lalu jalankan urutannya.</div>
+      <h4 id="gameTitle">—</h4>
+      <div class="desc" id="gameDesc">—</div>
 
-      <div class="grid" id="grid"></div>
-
-      <div>
-        <div style="font-size:12px;color:var(--ink-soft);font-weight:700;margin-bottom:6px;">📋 Urutan perintah</div>
-        <div class="order-box" id="orderBox"><span class="placeholder">Ketuk panah di bawah…</span></div>
-      </div>
-
-      <div class="controls">
-        <div class="ctrl-row"><button class="ctrl-btn" data-dir="up">↑</button></div>
-        <div class="ctrl-row">
-          <button class="ctrl-btn" data-dir="left">←</button>
-          <button class="ctrl-btn" data-dir="down">↓</button>
-          <button class="ctrl-btn" data-dir="right">→</button>
-        </div>
-      </div>
-
-      <div class="action-row">
-        <button class="btn play" id="runBtn">▶ Jalankan</button>
-        <button class="btn clear" id="clearBtn">⌫ Hapus</button>
-        <button class="btn redo" id="resetBtn">↺ Ulangi</button>
-      </div>
+      <div id="gameBody"><!-- diisi dinamis sesuai jenis modul --></div>
 
       <div class="success-panel" id="successPanel">
         <div class="emoji">🎉</div>
         <h4>Mantap, berhasil!</h4>
-        <p id="successText">Robot sampai di bendera. Siap lanjut ke level berikutnya?</p>
+        <p id="successText">Level selesai. Siap lanjut ke level berikutnya?</p>
         <button class="next-btn" id="nextLevelBtn">Lanjut ke Level 2 →</button>
       </div>
 
@@ -258,25 +270,16 @@
 
 <script>
 /* ===================== SESI LOGIN ===================== */
-/* Halaman ini WAJIB diakses setelah login lewat login.html,
-   yang menyimpan sessionStorage 'robokebun_user' = { role, user }. */
-
 const SESSION_KEY = 'robokebun_user';
-
 function getSession(){
-  try{
-    const raw = sessionStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  }catch(e){ return null; }
+  try{ const raw = sessionStorage.getItem(SESSION_KEY); return raw ? JSON.parse(raw) : null; }
+  catch(e){ return null; }
 }
-
 const session = getSession();
 
 if(!session){
-  // Belum login → lempar balik ke halaman login
   window.location.href = 'login.html';
 } else if(session.role === 'guru'){
-  // Guru tidak pakai halaman siswa ini → arahkan ke dashboard guru
   window.location.href = 'dashboard-guru.html';
 } else {
   document.getElementById('loadingScreen').style.display = 'none';
@@ -289,55 +292,137 @@ function initStudentApp(session){
   document.getElementById('avatarInitial').textContent = displayName.trim().charAt(0).toUpperCase() || 'S';
   document.getElementById('roleBadge').textContent = 'Siswa';
 
-  /* ===================== LOGOUT ===================== */
   document.getElementById('logoutBtn').addEventListener('click', () => {
     const ok = confirm(`Yakin mau keluar dari akun ${displayName}?`);
-    if(ok){
-      sessionStorage.removeItem(SESSION_KEY);
-      window.location.href = 'login.html';
-    }
+    if(ok){ sessionStorage.removeItem(SESSION_KEY); window.location.href = 'login.html'; }
   });
+
+  /* ===================== BANK SOAL / KONTEN PER MODUL ===================== */
+
+  // ---- Modul 1: Robo Kebun (maze panah) ----
+  const MAZE_GOALS = [3, 5, 2, 6, 4, 7]; // posisi bendera per level (0-7)
+
+  // ---- Modul 2: Kode Blok (Maju + Ulangi/loop) ----
+  const BLOCK_GOALS = [2, 4, 3, 6, 5];
+
+  // ---- Modul 3: Ladang Pola ----
+  const FLOWERS = ['🌸','🌷','🌹','🌻'];
+  function buildPatternLevel(levelIdx){
+    const bases = [
+      ['🌸','🌷','🌸','🌷'], ['🌹','🌹','🌻','🌹','🌹'],
+      ['🌷','🌸','🌷','🌸'], ['🌻','🌷','🌻','🌷'],
+      ['🌸','🌹','🌸','🌹'], ['🌷','🌷','🌻','🌷','🌷'],
+    ];
+    const qs = [];
+    for(let i=0;i<4;i++){
+      const base = bases[(levelIdx*4 + i) % bases.length];
+      const trueAnswer = base[0];
+      const seq = base.concat(['?']);
+      const distractors = FLOWERS.filter(f => f !== trueAnswer).sort(() => Math.random()-0.5).slice(0,3);
+      const options = [trueAnswer, ...distractors].sort(() => Math.random()-0.5);
+      qs.push({ type:'mcq', question:`Perhatikan polanya:\n${seq.join(' ')}\nBunga apa yang tepat menggantikan tanda tanya?`, options, answer: trueAnswer });
+    }
+    return qs;
+  }
+
+  // ---- Modul 4: Aktivitas Interaktif (4 mini-game, banyak soal) ----
+  function buildKodeBarisQuestions(){
+    const seqs = [
+      { seq:'→ → ↑', desc:'Kanan, Kanan, Atas' },
+      { seq:'↑ → ↓', desc:'Atas, Kanan, Bawah' },
+      { seq:'← ← ↓', desc:'Kiri, Kiri, Bawah' },
+      { seq:'↓ → →', desc:'Bawah, Kanan, Kanan' },
+      { seq:'↑ ↑ ←', desc:'Atas, Atas, Kiri' },
+    ];
+    return seqs.map((s,i) => {
+      const distractors = seqs.filter((_,j)=>j!==i).map(x=>x.desc).sort(()=>Math.random()-0.5).slice(0,3);
+      const options = [...distractors, s.desc].sort(()=>Math.random()-0.5);
+      return { type:'mcq', question:`Robot menjalankan kode:\n${s.seq}\nUrutan arah geraknya adalah…`, options, answer:s.desc };
+    });
+  }
+  function buildWarnaAngkaQuestions(){
+    const pairs = [ {c:'🔴',n:'1'}, {c:'🟡',n:'2'}, {c:'🟢',n:'3'}, {c:'🔵',n:'4'}, {c:'🟣',n:'5'} ];
+    return pairs.map((p,i) => {
+      const distractors = pairs.filter((_,j)=>j!==i).map(x=>x.n).sort(()=>Math.random()-0.5).slice(0,3);
+      const options = [...distractors, p.n].sort(()=>Math.random()-0.5);
+      return { type:'mcq', question:`Di kebun ini, warna ${p.c} punya kode angka berapa?`, options, answer:p.n };
+    });
+  }
+  function buildBenarSalahQuestions(){
+    const items = [
+      { s:'Blok "Ulangi 2x" membuat perintah di dalamnya dijalankan dua kali.', a:'Benar' },
+      { s:'Robot bisa bergerak menembus tembok kebun.', a:'Salah' },
+      { s:'Urutan perintah pada robot tidak memengaruhi hasil akhir.', a:'Salah' },
+      { s:'Panah ↑ membuat robot bergerak ke atas.', a:'Benar' },
+      { s:'Kode yang sama selalu bisa dijalankan ulang dengan hasil yang sama.', a:'Benar' },
+    ];
+    return items.map(it => ({ type:'mcq', question:it.s, options:['Benar','Salah'], answer:it.a, single:true }));
+  }
+  function buildTebakUrutanQuestions(){
+    const items = [
+      { q:'Robot di kiri, bendera di kanan (3 langkah). Urutan mana yang benar?', options:['→ → →','↑ ↑ ↑','← ← ←','→ ↑ →'], answer:'→ → →' },
+      { q:'Robot di bawah, bendera di atas (2 langkah). Urutan mana yang benar?', options:['↓ ↓','↑ ↑','← ←','→ →'], answer:'↑ ↑' },
+      { q:'Robot perlu maju 2 lalu belok ke bawah 1. Urutan mana yang benar?', options:['→ → ↓','↓ → →','→ ↓ →','← ← ↓'], answer:'→ → ↓' },
+      { q:'Robot perlu ke kiri 1 lalu ke atas 2. Urutan mana yang benar?', options:['← ↑ ↑','↑ ↑ ←','← ← ↑','→ ↑ ↑'], answer:'← ↑ ↑' },
+      { q:'Robot sudah di bendera. Urutan perintah terbaik adalah…', options:['(tidak perlu bergerak)','→ → →','↑ ↑ ↑','← ← ←'], answer:'(tidak perlu bergerak)' },
+    ];
+    return items.map(it => ({ type:'mcq', question:it.q, options:it.options, answer:it.answer }));
+  }
+  const INTERACTIVE_BUILDERS = [buildKodeBarisQuestions, buildWarnaAngkaQuestions, buildBenarSalahQuestions, buildTebakUrutanQuestions];
+  const INTERACTIVE_NAMES = ['Kode Baris', 'Warna & Angka', 'Benar atau Salah', 'Tebak Urutan'];
+
+  // ---- Modul 5: Koding Matematika ----
+  function buildMathQuestions(op){
+    const qs = [];
+    for(let i=0;i<5;i++){
+      let a, b, answer, opSym;
+      if(op === 'tambah'){ a = 2+i; b = 1+i; answer = a+b; opSym='+'; }
+      else if(op === 'kurang'){ a = 5+i*2; b = 1+i; answer = a-b; opSym='−'; }
+      else if(op === 'kali'){ a = 2+i; b = 2; answer = a*b; opSym='×'; }
+      else if(op === 'bagi'){ b = 2; a = (2+i)*b; answer = a/b; opSym='÷'; }
+      else { // campuran
+        const ops = ['+','−','×'];
+        opSym = ops[i % ops.length];
+        a = 2+i; b = 2 + (i%3);
+        answer = opSym==='+' ? a+b : opSym==='−' ? (a+3)-b : a*b;
+        if(opSym==='−') a = a+3;
+      }
+      qs.push({ type:'numeric', question:`Berapa hasil dari ${a} ${opSym} ${b} ?`, answer:String(answer) });
+    }
+    return qs;
+  }
+  const MATH_OPS = ['tambah','kurang','kali','bagi','campuran'];
+  const MATH_NAMES = ['Penjumlahan','Pengurangan','Perkalian','Pembagian','Campuran'];
 
   /* ===================== DATA MODUL ===================== */
   const MODULES = [
-    { id:'m1', color:'var(--c-biru)', icon:'🧭', tag:'CODING UNPLUGGED', name:'Robo Kebun',
+    { id:'m1', color:'var(--c-biru)', colorDark:'var(--c-biru-dark)', icon:'🧭', tag:'CODING UNPLUGGED', name:'Robo Kebun',
       desc:'Tuntun robot lewat kebun pakai panah arah — langkah pertama belajar urutan perintah.',
-      sub:'Susun urutan panah buat nuntun robot sampai ke bendera.', levels:6 },
-    { id:'m2', color:'var(--c-hijau)', icon:'🧩', tag:'CODING UNPLUGGED', name:'Robo Kebun — Kode Blok',
-      desc:'Susun blok Maju, Belok, dan Ulangi buat mengatur perjalanan robot. Kenalan sama loop!',
-      sub:'Susun blok perintah untuk memandu robot, termasuk blok Ulangi (loop).', levels:5 },
-    { id:'m3', color:'var(--c-ungu)', icon:'🌸', tag:'POLA & LOGIKA', name:'Ladang Pola',
+      sub:'Susun urutan panah buat nuntun robot sampai ke bendera.', levels:6, type:'maze' },
+    { id:'m2', color:'var(--c-hijau)', colorDark:'var(--c-hijau-dark)', icon:'🧩', tag:'CODING UNPLUGGED', name:'Robo Kebun — Kode Blok',
+      desc:'Susun blok Maju dan Ulangi buat mengatur perjalanan robot. Kenalan sama loop!',
+      sub:'Susun blok perintah untuk memandu robot, termasuk blok Ulangi (loop).', levels:5, type:'blocks' },
+    { id:'m3', color:'var(--c-ungu)', colorDark:'var(--c-ungu-dark)', icon:'🌸', tag:'POLA & LOGIKA', name:'Ladang Pola',
       desc:'Amati urutan warna bunga, lalu tebak bunga yang kosong sesuai polanya.',
-      sub:'Amati pola bunga dan lengkapi bagian yang kosong.', levels:4 },
-    { id:'m4', color:'var(--c-oranye)', icon:'🎲', tag:'MINI GAME', name:'Aktivitas Interaktif',
-      desc:'Empat mini-game seru: Kode Baris, Warna Angka, dan lainnya, semua dalam satu petak.',
-      sub:'Coba empat mini-game seru satu per satu.', levels:4 },
-    { id:'m5', color:'var(--c-merah)', icon:'🧮', tag:'MATEMATIKA', name:'Koding Matematika',
-      desc:'Timbang baju berwarna dan pecahkan soal tambah, kurang, kali, dan bagi.',
-      sub:'Pecahkan soal matematika sambil mengumpulkan bintang.', levels:5 },
+      sub:'Amati pola bunga dan lengkapi bagian yang kosong.', levels:4, type:'quiz' },
+    { id:'m4', color:'var(--c-oranye)', colorDark:'var(--c-oranye-dark)', icon:'🎲', tag:'MINI GAME', name:'Aktivitas Interaktif',
+      desc:'Empat mini-game seru: Kode Baris, Warna & Angka, Benar/Salah, dan Tebak Urutan — masing-masing dengan beberapa soal.',
+      sub:'Coba empat mini-game seru satu per satu.', levels:4, type:'quiz' },
+    { id:'m5', color:'var(--c-merah)', colorDark:'var(--c-merah-dark)', icon:'🧮', tag:'MATEMATIKA', name:'Koding Matematika',
+      desc:'Pecahkan soal tambah, kurang, kali, bagi, dan campuran sambil mengumpulkan bintang.',
+      sub:'Pecahkan soal matematika sambil mengumpulkan bintang.', levels:5, type:'quiz' },
   ];
 
-  /* progres per siswa disimpan terpisah di sessionStorage supaya tidak
-     tercampur antar akun (kunci pakai username) */
   const PROGRESS_KEY = 'robokebun_progress_' + (session.user && (session.user.username || session.user.name) || 'guest');
-
   function loadProgress(){
-    try{
-      const raw = sessionStorage.getItem(PROGRESS_KEY);
-      if(raw) return JSON.parse(raw);
-    }catch(e){}
-    const fresh = {};
-    MODULES.forEach(m => fresh[m.id] = { completedLevels: [], current: 1 });
-    return fresh;
+    try{ const raw = sessionStorage.getItem(PROGRESS_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+    const fresh = {}; MODULES.forEach(m => fresh[m.id] = { completedLevels: [], current: 1 }); return fresh;
   }
-  function saveProgress(){
-    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-  }
-
+  function saveProgress(){ sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); }
   let progress = loadProgress();
   MODULES.forEach(m => { if(!progress[m.id]) progress[m.id] = { completedLevels: [], current: 1 }; });
 
-  let state = { moduleIndex: 0, level: 1, steps: [] };
+  let state = { moduleIndex: 0, level: 1, steps: [], quiz: null };
 
   /* ===================== RENDER MAP ===================== */
   const mapWrap = document.getElementById('mapWrap');
@@ -376,23 +461,17 @@ function initStudentApp(session){
     const m = MODULES[index];
     const p = progress[m.id];
     state.level = level || Math.min(p.current, m.levels);
-    state.steps = [];
     showLevelView();
   }
-
   function showMapView(){
-    mapView.classList.add('active');
-    levelView.classList.remove('active');
+    mapView.classList.add('active'); levelView.classList.remove('active');
     breadcrumb.innerHTML = `<span>Beranda</span>`;
     renderMap();
   }
-
   function showLevelView(){
-    mapView.classList.remove('active');
-    levelView.classList.add('active');
+    mapView.classList.remove('active'); levelView.classList.add('active');
     renderLevel();
   }
-
   document.getElementById('backToMap').addEventListener('click', showMapView);
 
   function renderLevel(){
@@ -404,8 +483,6 @@ function initStudentApp(session){
     document.getElementById('levelTag').style.background = m.color;
     document.getElementById('levelModuleTitle').textContent = m.name;
     document.getElementById('levelModuleSub').textContent = m.sub;
-    document.getElementById('gameTitle').textContent = `Kebun ${state.level}`;
-    document.getElementById('gameDesc').textContent = 'Tekan tombol panah buat menambah langkah, lalu jalankan urutannya.';
 
     const dotsWrap = document.getElementById('levelDots');
     dotsWrap.innerHTML = '';
@@ -418,62 +495,230 @@ function initStudentApp(session){
       dot.textContent = isDone ? '✓' : lv;
       dot.addEventListener('click', () => {
         if(isLocked){ showToast('Selesaikan level sebelumnya dulu ya!'); return; }
-        state.level = lv;
-        state.steps = [];
-        renderLevel();
+        state.level = lv; renderLevel();
       });
       dotsWrap.appendChild(dot);
     }
 
     document.getElementById('successPanel').classList.remove('show');
     document.getElementById('moduleDonePanel').classList.remove('show');
+
+    if(m.type === 'maze') renderMazeGame(m);
+    else if(m.type === 'blocks') renderBlocksGame(m);
+    else renderQuizGame(m);
+  }
+
+  /* ===================== MODUL 1: MAZE ===================== */
+  function renderMazeGame(m){
+    document.getElementById('gameTitle').textContent = `Kebun ${state.level}`;
+    document.getElementById('gameDesc').textContent = 'Tekan tombol panah buat menambah langkah, lalu jalankan urutannya.';
+    const goal = MAZE_GOALS[state.level - 1];
     state.steps = [];
-    renderGrid();
-    renderOrderBox();
+
+    document.getElementById('gameBody').innerHTML = `
+      <div class="grid" id="grid"></div>
+      <div>
+        <div style="font-size:12px;color:var(--ink-soft);font-weight:700;margin-bottom:6px;">📋 Urutan perintah</div>
+        <div class="order-box" id="orderBox"><span class="placeholder">Ketuk panah di bawah…</span></div>
+      </div>
+      <div class="controls">
+        <div class="ctrl-row"><button class="ctrl-btn" data-dir="up">↑</button></div>
+        <div class="ctrl-row">
+          <button class="ctrl-btn" data-dir="left">←</button>
+          <button class="ctrl-btn" data-dir="down">↓</button>
+          <button class="ctrl-btn" data-dir="right">→</button>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn play" id="runBtn">▶ Jalankan</button>
+        <button class="btn clear" id="clearBtn">⌫ Hapus</button>
+        <button class="btn redo" id="resetBtn">↺ Ulangi</button>
+      </div>`;
+
+    const grid = document.getElementById('grid');
+    const orderBox = document.getElementById('orderBox');
+    function renderGrid(pos){
+      grid.innerHTML = '';
+      for(let i=0;i<8;i++){
+        const cell = document.createElement('div'); cell.className = 'cell';
+        const p2 = pos === undefined ? 0 : pos;
+        if(i === p2){ cell.classList.add('player'); cell.textContent = '🤖'; }
+        else if(i === goal){ cell.classList.add('goal'); cell.textContent = '🚩'; }
+        grid.appendChild(cell);
+      }
+    }
+    function renderOrder(){
+      if(state.steps.length === 0){ orderBox.innerHTML = '<span class="placeholder">Ketuk panah di bawah…</span>'; return; }
+      const sym = { up:'↑', down:'↓', left:'←', right:'→' };
+      orderBox.innerHTML = state.steps.map(s => sym[s]).join(' ');
+    }
+    renderGrid(); renderOrder();
+
+    document.querySelectorAll('#gameBody .ctrl-btn').forEach(btn => {
+      btn.addEventListener('click', () => { state.steps.push(btn.dataset.dir); renderOrder(); });
+    });
+    document.getElementById('clearBtn').addEventListener('click', () => { if(state.steps.length){ state.steps.pop(); renderOrder(); } });
+    document.getElementById('resetBtn').addEventListener('click', () => { state.steps = []; renderOrder(); renderGrid(); });
+    document.getElementById('runBtn').addEventListener('click', () => {
+      let pos = 0;
+      state.steps.forEach(dir => { if(dir === 'right') pos++; if(dir === 'left') pos--; });
+      pos = Math.max(0, Math.min(7, pos));
+      renderGrid(pos);
+      if(pos === goal) completeLevel(); else showToast('Belum sampai bendera, coba lagi!');
+    });
   }
 
-  /* ---- mini game robot (contoh fungsional) ---- */
-  const grid = document.getElementById('grid');
-  const orderBox = document.getElementById('orderBox');
-  const GOAL = 3;
+  /* ===================== MODUL 2: BLOK + ULANGI ===================== */
+  function renderBlocksGame(m){
+    document.getElementById('gameTitle').textContent = `Kebun Blok ${state.level}`;
+    document.getElementById('gameDesc').textContent = 'Susun blok Maju dan Ulangi, lalu jalankan untuk memandu robot.';
+    const goal = BLOCK_GOALS[state.level - 1];
+    state.steps = []; // tiap elemen: {type:'maju'} atau {type:'ulangi', n:2}
 
-  function renderGrid(highlightPos){
-    grid.innerHTML = '';
-    for(let i=0;i<8;i++){
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-      const pos = (highlightPos !== undefined) ? highlightPos : 0;
-      if(i === pos){ cell.classList.add('player'); cell.textContent = '🤖'; }
-      else if(i === GOAL){ cell.classList.add('goal'); cell.textContent = '🚩'; }
-      grid.appendChild(cell);
+    document.getElementById('gameBody').innerHTML = `
+      <div class="grid" id="grid"></div>
+      <div>
+        <div style="font-size:12px;color:var(--ink-soft);font-weight:700;margin-bottom:6px;">🧩 Blok kode</div>
+        <div class="order-box" id="orderBox"><span class="placeholder">Susun blok di bawah…</span></div>
+      </div>
+      <div class="controls">
+        <div class="ctrl-row">
+          <button class="ctrl-btn" id="blkMaju">➕ Maju</button>
+          <button class="ctrl-btn loop" id="blkUlangi">🔁 Ulangi Maju x2</button>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn play" id="runBtn">▶ Jalankan</button>
+        <button class="btn clear" id="clearBtn">⌫ Hapus</button>
+        <button class="btn redo" id="resetBtn">↺ Ulangi</button>
+      </div>`;
+
+    const grid = document.getElementById('grid');
+    const orderBox = document.getElementById('orderBox');
+    function renderGrid(pos){
+      grid.innerHTML = '';
+      for(let i=0;i<8;i++){
+        const cell = document.createElement('div'); cell.className = 'cell';
+        const p2 = pos === undefined ? 0 : pos;
+        if(i === p2){ cell.classList.add('player'); cell.textContent = '🤖'; }
+        else if(i === goal){ cell.classList.add('goal'); cell.textContent = '🚩'; }
+        grid.appendChild(cell);
+      }
+    }
+    function renderOrder(){
+      if(state.steps.length === 0){ orderBox.innerHTML = '<span class="placeholder">Susun blok di bawah…</span>'; return; }
+      orderBox.innerHTML = state.steps.map(s => s.type === 'maju' ? '➡️' : `🔁×${s.n}`).join(' ');
+    }
+    renderGrid(); renderOrder();
+
+    document.getElementById('blkMaju').addEventListener('click', () => { state.steps.push({type:'maju'}); renderOrder(); });
+    document.getElementById('blkUlangi').addEventListener('click', () => { state.steps.push({type:'ulangi', n:2}); renderOrder(); });
+    document.getElementById('clearBtn').addEventListener('click', () => { if(state.steps.length){ state.steps.pop(); renderOrder(); } });
+    document.getElementById('resetBtn').addEventListener('click', () => { state.steps = []; renderOrder(); renderGrid(); });
+    document.getElementById('runBtn').addEventListener('click', () => {
+      let pos = 0;
+      state.steps.forEach(s => { pos += (s.type === 'maju') ? 1 : s.n; });
+      pos = Math.max(0, Math.min(7, pos));
+      renderGrid(pos);
+      if(pos === goal) completeLevel(); else showToast('Belum sampai bendera, coba susun ulang blok-nya!');
+    });
+  }
+
+  /* ===================== MODUL 3/4/5: KUIS (banyak soal) ===================== */
+  function getQuizQuestions(m){
+    if(m.id === 'm3') return buildPatternLevel(state.level - 1);
+    if(m.id === 'm4') return INTERACTIVE_BUILDERS[state.level - 1]();
+    if(m.id === 'm5') return buildMathQuestions(MATH_OPS[state.level - 1]);
+    return [];
+  }
+  function getLevelLabel(m){
+    if(m.id === 'm3') return `Ladang ${state.level}`;
+    if(m.id === 'm4') return INTERACTIVE_NAMES[state.level - 1];
+    if(m.id === 'm5') return MATH_NAMES[state.level - 1];
+    return `Level ${state.level}`;
+  }
+
+  function renderQuizGame(m){
+    document.getElementById('gameTitle').textContent = getLevelLabel(m);
+    document.getElementById('gameDesc').textContent = 'Jawab semua soal dengan benar untuk menyelesaikan level ini.';
+
+    const questions = getQuizQuestions(m);
+    state.quiz = { questions, index: 0, correctCount: 0 };
+    renderQuizQuestion();
+  }
+
+  function renderQuizQuestion(){
+    const q = state.quiz.questions[state.quiz.index];
+    const total = state.quiz.questions.length;
+    const pct = Math.round((state.quiz.index / total) * 100);
+
+    let optionsHtml = '';
+    if(q.type === 'mcq'){
+      optionsHtml = `<div class="quiz-options ${q.single ? 'single' : ''}" id="quizOptions">
+        ${q.options.map(opt => `<button class="quiz-opt" data-val="${encodeURIComponent(opt)}">${opt}</button>`).join('')}
+      </div>`;
+    } else {
+      optionsHtml = `<div class="quiz-input-row">
+        <input type="number" id="quizInput" placeholder="?">
+        <button class="btn play" id="quizSubmit">Periksa</button>
+      </div>`;
+    }
+
+    document.getElementById('gameBody').innerHTML = `
+      <div class="quiz-progress">
+        <span class="lbl">Soal ${state.quiz.index + 1}/${total}</span>
+        <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="quiz-question">${q.question}</div>
+      ${optionsHtml}
+      <div class="quiz-feedback" id="quizFeedback"></div>`;
+
+    if(q.type === 'mcq'){
+      document.querySelectorAll('#quizOptions .quiz-opt').forEach(btn => {
+        btn.addEventListener('click', () => checkAnswer(decodeURIComponent(btn.dataset.val), btn));
+      });
+    } else {
+      const input = document.getElementById('quizInput');
+      const submit = document.getElementById('quizSubmit');
+      const go = () => checkAnswer(input.value.trim(), submit);
+      submit.addEventListener('click', go);
+      input.addEventListener('keydown', e => { if(e.key === 'Enter') go(); });
     }
   }
-  function renderOrderBox(){
-    if(state.steps.length === 0){
-      orderBox.innerHTML = '<span class="placeholder">Ketuk panah di bawah…</span>';
-      return;
+
+  function checkAnswer(value, triggerEl){
+    const q = state.quiz.questions[state.quiz.index];
+    const feedback = document.getElementById('quizFeedback');
+    const isCorrect = String(value).trim().toLowerCase() === String(q.answer).trim().toLowerCase();
+
+    if(q.type === 'mcq'){
+      document.querySelectorAll('#quizOptions .quiz-opt').forEach(btn => {
+        btn.disabled = true;
+        if(decodeURIComponent(btn.dataset.val).toLowerCase() === String(q.answer).toLowerCase()) btn.classList.add('correct');
+      });
+      if(!isCorrect) triggerEl.classList.add('wrong');
     }
-    const symbols = { up:'↑', down:'↓', left:'←', right:'→' };
-    orderBox.innerHTML = state.steps.map(s => symbols[s]).join(' ');
+
+    if(isCorrect){
+      feedback.textContent = '✓ Benar!';
+      feedback.className = 'quiz-feedback ok';
+      state.quiz.correctCount++;
+      setTimeout(() => {
+        if(state.quiz.index + 1 < state.quiz.questions.length){
+          state.quiz.index++;
+          renderQuizQuestion();
+        } else {
+          completeLevel();
+        }
+      }, 700);
+    } else {
+      feedback.textContent = '✗ Coba lagi ya…';
+      feedback.className = 'quiz-feedback bad';
+      setTimeout(() => renderQuizQuestion(), 900); // soal sama diulang
+    }
   }
 
-  document.querySelectorAll('.ctrl-btn').forEach(btn => {
-    btn.addEventListener('click', () => { state.steps.push(btn.dataset.dir); renderOrderBox(); });
-  });
-  document.getElementById('clearBtn').addEventListener('click', () => {
-    if(state.steps.length){ state.steps.pop(); renderOrderBox(); }
-  });
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    state.steps = []; renderOrderBox(); renderGrid();
-  });
-  document.getElementById('runBtn').addEventListener('click', () => {
-    let pos = 0;
-    state.steps.forEach(dir => { if(dir === 'right') pos++; if(dir === 'left') pos--; });
-    renderGrid(Math.max(0, Math.min(7, pos)));
-    if(pos === GOAL){ completeLevel(); } else { showToast('Belum sampai bendera, coba lagi!'); }
-  });
-
-  /* ---- selesai level + navigasi lanjut ---- */
+  /* ===================== SELESAI LEVEL + NAVIGASI ===================== */
   function completeLevel(){
     const m = MODULES[state.moduleIndex];
     const p = progress[m.id];
@@ -507,19 +752,16 @@ function initStudentApp(session){
     });
   }
 
-  document.getElementById('nextLevelBtn').addEventListener('click', () => {
-    state.level += 1; state.steps = []; renderLevel();
-  });
+  document.getElementById('nextLevelBtn').addEventListener('click', () => { state.level += 1; renderLevel(); });
   document.getElementById('nextModuleBtn').addEventListener('click', () => {
     const isLastModule = state.moduleIndex >= MODULES.length - 1;
-    if(isLastModule){ showMapView(); } else { enterModule(state.moduleIndex + 1, 1); }
+    if(isLastModule) showMapView(); else enterModule(state.moduleIndex + 1, 1);
   });
 
   /* ===================== TOAST ===================== */
   function showToast(msg){
     const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
+    toast.textContent = msg; toast.classList.add('show');
     clearTimeout(showToast._t);
     showToast._t = setTimeout(() => toast.classList.remove('show'), 2000);
   }
