@@ -192,9 +192,80 @@
   .message.hint{background:#fdf0d8;color:var(--c-oranye-dark);}
 
   .footnote{text-align:center;color:var(--ink-soft);font-size:12px;font-weight:600;padding:6px 16px 30px;}
+
+  /* ===== topbar navigasi (nama siswa / lanjut / keluar) ===== */
+  .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:8px;background:var(--card);border-bottom:4px solid var(--soil);padding:10px 16px;}
+  .topbar-user{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;color:var(--soil-dark);}
+  .topbar-user .tb-avatar{font-size:20px;}
+  .topbar-progress{font-weight:700;font-size:12px;color:var(--ink-soft);background:#f6ecd9;
+    border:2px solid #e0cda0;border-radius:20px;padding:4px 10px;}
+  .topbar-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .topbar-btn{border:none;border-radius:12px;font-weight:700;font-size:12.5px;padding:8px 14px;
+    cursor:pointer;color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18);font-family:inherit;}
+  .topbar-btn:active{transform:translateY(2px);box-shadow:none;}
+  .topbar-home{background:#8a97a3;box-shadow:0 3px 0 #6b7680;}
+  .topbar-next{background:var(--c-oranye);box-shadow:0 3px 0 var(--c-oranye-dark);}
+  .topbar-logout{background:#c0392b;box-shadow:0 3px 0 #922017;}
+  @media(max-width:480px){.topbar{padding:8px 10px;} .topbar-progress{display:none;}}
 </style>
 </head>
 <body>
+  <div class="topbar">
+    <div class="topbar-user"><span class="tb-avatar">🧑‍🎓</span><span id="tbName">Siswa</span></div>
+    <div class="topbar-actions">
+      <span class="topbar-progress" id="tbProgress"></span>
+      <button class="topbar-btn topbar-home" id="tbHome" title="Daftar Ladang">🏠</button>
+      <button class="topbar-btn topbar-next" id="tbNext">Lanjut ➡️</button>
+      <button class="topbar-btn topbar-logout" id="tbLogout">🚪 Keluar</button>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var LADANG_ORDER = ['robo-kebun.html','robo-kebun-blok.html','ladang-pola.html','aktivitas-interaktif.html','matematika.html'];
+    var LADANG_LABELS = ['Robo Kebun','Kode Blok','Ladang Pola','Aktivitas Interaktif','Matematika'];
+    var THIS_FILE = 'aktivitas-interaktif.html';
+    var idx = LADANG_ORDER.indexOf(THIS_FILE);
+
+    var raw = sessionStorage.getItem('robokebun_user');
+    if(!raw){ window.location.href = 'login.html'; }
+    var sess = null;
+    try{ sess = JSON.parse(raw); }catch(e){}
+
+    window.addEventListener('DOMContentLoaded', function(){
+      var nameEl = document.getElementById('tbName');
+      if(nameEl){
+        var u = (sess && sess.user) || {};
+        nameEl.textContent = u.name || u.nama || (sess && sess.username) || 'Siswa';
+      }
+      var progEl = document.getElementById('tbProgress');
+      if(progEl) progEl.textContent = 'Ladang ' + (idx+1) + ' dari ' + LADANG_ORDER.length;
+
+      var homeBtn = document.getElementById('tbHome');
+      if(homeBtn) homeBtn.onclick = function(){ window.location.href = 'index.html'; };
+
+      var nextBtn = document.getElementById('tbNext');
+      if(nextBtn){
+        var nextFile = LADANG_ORDER[idx+1];
+        if(nextFile){
+          nextBtn.textContent = 'Lanjut: ' + LADANG_LABELS[idx+1] + ' ➡️';
+          nextBtn.onclick = function(){ window.location.href = nextFile; };
+        } else {
+          nextBtn.textContent = '🏁 Selesai Semua!';
+          nextBtn.onclick = function(){ window.location.href = 'index.html'; };
+        }
+      }
+      var logoutBtn = document.getElementById('tbLogout');
+      if(logoutBtn){
+        logoutBtn.onclick = function(){
+          sessionStorage.removeItem('robokebun_user');
+          window.location.href = 'login.html';
+        };
+      }
+    });
+  })();
+  </script>
+
 
   <div class="header">
     <div class="eyebrow">🎲 CODING UNPLUGGED</div>

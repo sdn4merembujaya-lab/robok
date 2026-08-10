@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Daftar Ladang — Robo Kebun</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#ffd9a0;--sky-bottom:#fff3da;
+    --soil:#7a4a2b;--soil-dark:#5e3620;
+    --card:#fffaf0;--ink:#3a2f2a;--ink-soft:#7a6a5c;
+    --c-biru:#4a9fc9;--c-biru-dark:#2f7796;
+    --c-hijau:#5ba64a;--c-hijau-dark:#3f7d34;
+    --c-ungu:#9b72cf;--c-ungu-dark:#7550a8;
+    --c-oranye:#e88a3c;--c-oranye-dark:#bf6a26;
+    --c-navy:#3E6491;--c-navy-dark:#2b4a6b;
+    --c-kuning:#f4c548;--c-kuning-dark:#cf9e1f;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Quicksand',sans-serif;color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 55%);min-height:100vh;}
+  h1,h2,h3{font-family:'Fredoka',sans-serif;}
+  button{font-family:inherit;}
+
+  .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:8px;background:var(--card);border-bottom:4px solid var(--soil);padding:10px 16px;}
+  .topbar-user{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;color:var(--soil-dark);}
+  .topbar-user .tb-avatar{font-size:20px;}
+  .topbar-btn{border:none;border-radius:12px;font-weight:700;font-size:12.5px;padding:8px 14px;
+    cursor:pointer;color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18);}
+  .topbar-btn:active{transform:translateY(2px);box-shadow:none;}
+  .topbar-logout{background:#c0392b;box-shadow:0 3px 0 #922017;}
+
+  .header{text-align:center;padding:22px 16px 6px;}
+  .eyebrow{display:inline-block;background:var(--c-hijau);color:#fff;font-weight:700;font-size:12px;
+    letter-spacing:.04em;padding:5px 14px;border-radius:20px;box-shadow:0 3px 0 var(--c-hijau-dark);margin-bottom:10px;}
+  .header h1{margin:0;font-size:30px;color:var(--soil-dark);}
+  .header p{margin:6px auto 0;color:var(--ink-soft);font-weight:600;font-size:13.5px;max-width:440px;}
+
+  .cta-wrap{display:flex;justify-content:center;padding:14px 16px 4px;}
+  .btn-cta{background:linear-gradient(180deg,#8fe08f,var(--c-hijau-dark));color:#fff;border:none;
+    padding:13px 26px;border-radius:16px;font-weight:700;font-size:15px;cursor:pointer;
+    box-shadow:0 4px 0 var(--c-hijau-dark);}
+  .btn-cta:active{transform:translateY(3px);box-shadow:none;}
+
+  .stage{max-width:640px;margin:14px auto 40px;padding:0 16px;display:flex;flex-direction:column;gap:14px;}
+
+  .ladang-card{background:var(--card);border:4px solid var(--soil);border-radius:22px;
+    padding:16px 18px;box-shadow:0 6px 0 rgba(0,0,0,.08);display:flex;align-items:center;gap:14px;
+    cursor:pointer;text-align:left;}
+  .ladang-card:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.08);}
+  .ladang-num{width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;
+    justify-content:center;font-weight:700;font-size:16px;color:#fff;font-family:'Fredoka',sans-serif;}
+  .ladang-body{flex:1;}
+  .ladang-body h2{margin:0 0 3px;font-size:16.5px;color:var(--soil-dark);}
+  .ladang-body p{margin:0;color:var(--ink-soft);font-weight:600;font-size:12.5px;}
+  .ladang-status{flex-shrink:0;font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;
+    white-space:nowrap;}
+  .status-selesai{background:#e3f5df;color:var(--c-hijau-dark);}
+  .status-jalan{background:#fdf0d8;color:var(--c-oranye-dark);}
+  .status-belum{background:#efe6d4;color:var(--ink-soft);}
+
+  .footnote{text-align:center;color:var(--ink-soft);font-size:12px;font-weight:600;padding:6px 16px 30px;}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-user"><span class="tb-avatar">🧑‍🎓</span><span id="tbName">Siswa</span></div>
+    <button class="topbar-btn topbar-logout" id="tbLogout">🚪 Keluar</button>
+  </div>
+
+  <div class="header">
+    <div class="eyebrow">🌻 ROBO KEBUN</div>
+    <h1>Daftar Ladang</h1>
+    <p>Kerjakan ladang satu per satu ya. Ketuk kartunya buat mulai, atau langsung lanjut ke ladang berikutnya.</p>
+  </div>
+
+  <div class="cta-wrap">
+    <button class="btn-cta" id="btnLanjut">▶️ Lanjut Belajar</button>
+  </div>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="footnote">© 2026 DEE 4 MEREMBU • All Rights Reserved</div>
+
+<script>
+  const LADANG = [
+    { file:'robo-kebun.html', title:'1. Robo Kebun', desc:'Susun panah arah menuntun robot ke bendera', color:'var(--c-biru)', icon:'🤖' },
+    { file:'robo-kebun-blok.html', title:'2. Robo Kebun — Kode Blok', desc:'Susun blok Maju, Belok, dan Ulangi (loop)', color:'var(--c-hijau)', icon:'🧩' },
+    { file:'ladang-pola.html', title:'3. Ladang Pola', desc:'Tebak dan lengkapi pola urutan warna', color:'var(--c-ungu)', icon:'🌼' },
+    { file:'aktivitas-interaktif.html', title:'4. Aktivitas Interaktif', desc:'12 mini-game seru seputar coding unplugged', color:'var(--c-oranye)', icon:'🎮' },
+    { file:'matematika.html', title:'5. Koding Matematika', desc:'Latihan hitung tambah, kurang, kali, bagi', color:'var(--c-navy)', icon:'➗' }
+  ];
+
+  // cek sesi login
+  const raw = sessionStorage.getItem('robokebun_user');
+  if (!raw){ window.location.href = 'login.html'; }
+  let sess = null;
+  try{ sess = JSON.parse(raw); }catch(e){}
+
+  function getStatus(file){
+    try{
+      if (file === 'robo-kebun.html'){
+        const s = JSON.parse(localStorage.getItem('robokebun_solved') || '[]');
+        if (s.length >= 6) return 'selesai';
+        if (s.length > 0) return 'jalan';
+        return 'belum';
+      }
+      if (file === 'robo-kebun-blok.html'){
+        const s = JSON.parse(localStorage.getItem('robokebunblok_solved') || '[]');
+        if (s.length >= 5) return 'selesai';
+        if (s.length > 0) return 'jalan';
+        return 'belum';
+      }
+      if (file === 'ladang-pola.html'){
+        const s = JSON.parse(localStorage.getItem('ladangpola_solved') || '[]');
+        if (s.length >= 10) return 'selesai';
+        if (s.length > 0) return 'jalan';
+        return 'belum';
+      }
+      if (file === 'aktivitas-interaktif.html'){
+        const p = JSON.parse(localStorage.getItem('aktivitasinteraktif_progress') || '{}');
+        const keys = Object.keys(p);
+        if (keys.length >= 12) return 'selesai';
+        if (keys.length > 0) return 'jalan';
+        return 'belum';
+      }
+    }catch(e){}
+    return 'belum'; // matematika.html: latihan bebas, tidak dilacak
+  }
+
+  const STATUS_LABEL = { selesai:'✓ Selesai', jalan:'Sedang jalan', belum:'Belum mulai' };
+  const STATUS_CLASS = { selesai:'status-selesai', jalan:'status-jalan', belum:'status-belum' };
+
+  function render(){
+    const stage = document.getElementById('stage');
+    stage.innerHTML = '';
+    LADANG.forEach(l=>{
+      const status = (l.file === 'matematika.html') ? null : getStatus(l.file);
+      const card = document.createElement('div');
+      card.className = 'ladang-card';
+      card.onclick = () => { window.location.href = l.file; };
+
+      const num = document.createElement('div');
+      num.className = 'ladang-num';
+      num.style.background = l.color;
+      num.innerText = l.icon;
+      card.appendChild(num);
+
+      const body = document.createElement('div');
+      body.className = 'ladang-body';
+      const h2 = document.createElement('h2'); h2.innerText = l.title;
+      const p = document.createElement('p'); p.innerText = l.desc;
+      body.appendChild(h2); body.appendChild(p);
+      card.appendChild(body);
+
+      const badge = document.createElement('div');
+      if (status){
+        badge.className = 'ladang-status ' + STATUS_CLASS[status];
+        badge.innerText = STATUS_LABEL[status];
+      } else {
+        badge.className = 'ladang-status status-belum';
+        badge.innerText = 'Latihan bebas';
+      }
+      card.appendChild(badge);
+
+      stage.appendChild(card);
+    });
+  }
+
+  document.getElementById('btnLanjut').onclick = () => {
+    // cari ladang pertama yang belum selesai, kalau semua selesai buka ladang pertama lagi
+    const next = LADANG.find(l => l.file !== 'matematika.html' && getStatus(l.file) !== 'selesai');
+    window.location.href = next ? next.file : LADANG[0].file;
+  };
+
+  const nameEl = document.getElementById('tbName');
+  if (nameEl){
+    const u = (sess && sess.user) || {};
+    nameEl.textContent = u.name || u.nama || (sess && sess.username) || 'Siswa';
+  }
+  document.getElementById('tbLogout').onclick = () => {
+    sessionStorage.removeItem('robokebun_user');
+    window.location.href = 'login.html';
+  };
+
+  render();
+</script>
+</body>
+</html>
