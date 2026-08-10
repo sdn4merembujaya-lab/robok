@@ -5,7 +5,7 @@
 <title>Dashboard Guru — Robo Kebun</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -66,26 +66,43 @@
   .btn-sert:active{transform:translateY(2px);box-shadow:none;}
   .btn-sert:disabled{background:#ddd0b8;color:#8a7a68;box-shadow:none;cursor:default;}
 
-  /* ==== template sertifikat: disembunyikan dari layar, hanya dipakai untuk di-capture ==== */
+  /* ==== template piagam: disembunyikan dari layar, hanya dipakai untuk di-capture ==== */
   #sertifikatWrap{position:fixed;left:-99999px;top:0;}
+
   #sertifikatTemplate{
-    width:1120px;height:800px;background:#fffdf6;
-    border:14px solid var(--gold);outline:3px solid var(--soil);outline-offset:-24px;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;padding:40px;font-family:'Quicksand',sans-serif;
+    width:850px;height:1202px;background:#fdf7e4;
+    display:flex;flex-direction:row;
+    font-family:'Quicksand',sans-serif;color:#1a1a1a;
   }
-  #sertifikatTemplate .label-top{font-family:'Fredoka',sans-serif;letter-spacing:4px;
-    font-size:16px;color:var(--c-hijau-dark);font-weight:700;text-transform:uppercase;}
-  #sertifikatTemplate .nomor{font-size:12.5px;color:var(--ink-soft);font-weight:700;margin-top:4px;}
-  #sertifikatTemplate h2{font-family:'Fredoka',sans-serif;font-size:44px;color:var(--soil-dark);margin:8px 0 22px;}
-  #sertifikatTemplate .diberikan{font-size:15px;color:var(--ink-soft);font-weight:600;}
-  #sertifikatTemplate .nama-siswa{font-family:'Great Vibes',cursive;font-size:64px;color:var(--gold);margin:14px 0;}
-  #sertifikatTemplate .deskripsi{max-width:760px;font-size:16px;font-weight:600;color:var(--ink);line-height:1.6;margin:8px 0 26px;}
-  #sertifikatTemplate .deskripsi b{color:var(--c-hijau-dark);}
-  #sertifikatTemplate .footer-row{display:flex;justify-content:space-between;width:100%;max-width:820px;margin-top:20px;font-size:13px;color:var(--ink-soft);font-weight:700;}
-  #sertifikatTemplate .footer-row .kepsek{border-top:2px solid var(--soil);padding-top:6px;min-width:220px;}
-  #sertifikatTemplate .footer-row .kepsek .nama-kepsek{font-size:15px;color:var(--ink);margin-top:34px;}
-  #sertifikatTemplate .footer-row .tempat-tanggal{padding-top:44px;min-width:220px;text-align:right;}
+  #sertifikatTemplate .border-kiri{
+    width:108px;height:100%;flex-shrink:0;
+    background-image:url('__BORDER_B64__');
+    background-repeat:repeat-y;background-size:108px auto;background-position:top left;
+  }
+  #sertifikatTemplate .isi-piagam{
+    flex:1;display:flex;flex-direction:column;align-items:center;
+    padding:56px 54px 44px;text-align:center;
+  }
+  #sertifikatTemplate .logo{width:96px;height:96px;object-fit:contain;margin-bottom:16px;}
+  #sertifikatTemplate .judul{
+    font-family:'Fredoka',sans-serif;font-weight:700;font-size:30px;
+    text-decoration:underline;text-underline-offset:6px;margin:0 0 8px;
+    text-transform:uppercase;letter-spacing:.5px;
+  }
+  #sertifikatTemplate .nomor{font-size:14px;font-weight:600;margin-bottom:46px;color:#2a2a2a;}
+  #sertifikatTemplate .diberikan{font-size:16px;font-weight:600;margin-bottom:18px;}
+  #sertifikatTemplate .nama-siswa{
+    font-family:'Fredoka',sans-serif;font-weight:700;font-size:26px;
+    text-transform:uppercase;margin-bottom:40px;letter-spacing:.5px;
+  }
+  #sertifikatTemplate .deskripsi{
+    font-size:16px;line-height:1.9;max-width:620px;font-weight:500;color:#1a1a1a;
+  }
+  #sertifikatTemplate .deskripsi b{font-weight:700;}
+  #sertifikatTemplate .ttd{align-self:flex-end;text-align:center;min-width:230px;margin-top:auto;padding-top:70px;}
+  #sertifikatTemplate .ttd .label{font-size:15px;font-weight:600;margin-bottom:64px;}
+  #sertifikatTemplate .ttd .nama-kepsek{font-size:16px;font-weight:700;text-decoration:underline;text-underline-offset:4px;}
+  #sertifikatTemplate .ttd .nip{font-size:14px;font-weight:600;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -122,25 +139,24 @@
     </table>
   </div>
 
-  <!-- Template sertifikat tersembunyi — dipakai html2canvas untuk di-capture jadi PDF -->
+  <!-- Template Piagam Penghargaan tersembunyi — dipakai html2canvas untuk di-capture jadi PDF -->
   <div id="sertifikatWrap">
     <div id="sertifikatTemplate">
-      <div class="label-top">Robo Kebun</div>
-      <div class="nomor" id="sertNomor">Nomor: -</div>
-      <h2>Sertifikat Penghargaan</h2>
-      <div class="diberikan">Diberikan kepada</div>
-      <div class="nama-siswa" id="sertNama">Nama Siswa</div>
-      <div class="deskripsi">
-        Atas keberhasilannya menyelesaikan seluruh kegiatan berkebun di <b>Robo Kebun</b>
-        dengan skor <b id="sertSkor">0</b> dan predikat <b id="sertPredikat">-</b>.
-      </div>
-      <div class="footer-row">
-        <div class="kepsek">
-          Kepala Sekolah,
-          <div class="nama-kepsek" id="sertKepsek">-</div>
-          <div id="sertNip">NIP. -</div>
+      <div class="border-kiri"></div>
+      <div class="isi-piagam">
+        <img class="logo" src="__LOGO_B64__" alt="Logo">
+        <div class="judul">Piagam Penghargaan</div>
+        <div class="nomor">Nomor : <span id="sertNomor">-</span></div>
+        <div class="diberikan">Diberikan kepada:</div>
+        <div class="nama-siswa" id="sertNama">Nama Siswa</div>
+        <div class="deskripsi">
+          Sebagai <b>PESERTA</b> dalam keikutsertaan pada Susun Panah Robot, Susun Kode Balok, Tebak Pola Warna, Game Mini dan Koding Matematika dengan perolehan Nilai <b id="sertSkor">0</b> dan Predikat <b id="sertPredikat">-</b> yang diselenggarakan oleh <b id="sertSekolah">-</b>. Semoga pencapaian ini dapat menjadi motivasi untuk terus berprestasi dan meraih kesuksesan di masa depan.
         </div>
-        <div class="tempat-tanggal" id="sertTempatTanggal">-</div>
+        <div class="ttd">
+          <div class="label">Kepala Sekolah,</div>
+          <div class="nama-kepsek" id="sertKepsek">-</div>
+          <div class="nip" id="sertNip">NIP. -</div>
+        </div>
       </div>
     </div>
   </div>
@@ -172,7 +188,7 @@
   const BATAS_SKOR_SERTIFIKAT = 76;
 
   let semuaSiswa = [];
-  let dataSekolahCache = null; // cache nomor surat / kepsek / nip / tempat, sekali ambil dipakai berulang
+  let dataSekolahCache = null; // cache nomor surat / kepsek / nip, sekali ambil dipakai berulang
 
   function getPredikat(skor){
     if (skor >= 91) return { label: 'Sangat Baik', kelas: 'badge-sangat' };
@@ -251,9 +267,9 @@
     renderTabel(hasil);
   });
 
-  // ==== SERTIFIKAT ====
+  // ==== PIAGAM / SERTIFIKAT ====
 
-  // Ambil nomor surat / nama kepsek / nip / tempat-tanggal dari Apps Script (action: 'sertifikat'), sekali saja lalu dicache
+  // Ambil nomor surat / nama kepsek / nip dari Apps Script (action: 'sertifikat'), sekali saja lalu dicache
   async function ambilDataSekolah(){
     if (dataSekolahCache) return dataSekolahCache;
     const res = await fetch(APPS_SCRIPT_URL, {
@@ -268,7 +284,6 @@
       nomorSurat: satu.nomorSurat || '-',
       namaKepsek: satu.namaKepsek || '-',
       nip: satu.nip || '-',
-      tempatTanggal: satu.tempatTanggal || '-',
     };
     return dataSekolahCache;
   }
@@ -281,27 +296,29 @@
       const sekolah = await ambilDataSekolah();
       const pred = getPredikat(siswa.skor);
 
-      document.getElementById('sertNomor').textContent = 'Nomor: ' + sekolah.nomorSurat;
+      document.getElementById('sertNomor').textContent = sekolah.nomorSurat;
       document.getElementById('sertNama').textContent = siswa.nama;
       document.getElementById('sertSkor').textContent = siswa.skor;
       document.getElementById('sertPredikat').textContent = pred.label;
+      document.getElementById('sertSekolah').textContent = siswa.namaSekolah || '-';
       document.getElementById('sertKepsek').textContent = sekolah.namaKepsek;
       document.getElementById('sertNip').textContent = 'NIP. ' + sekolah.nip;
-      document.getElementById('sertTempatTanggal').textContent = sekolah.tempatTanggal;
 
       if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
         throw new Error('Library PDF belum termuat, cek koneksi internet.');
       }
 
       const tpl = document.getElementById('sertifikatTemplate');
+      if (document.fonts && document.fonts.ready) { await document.fonts.ready; }
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-      const canvas = await html2canvas(tpl, { scale: 2, backgroundColor: '#fffdf6', useCORS: true });
+      const canvas = await html2canvas(tpl, { scale: 2, backgroundColor: '#fdf7e4', useCORS: true });
       const imgData = canvas.toDataURL('image/png');
       const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width, canvas.height] });
+      const orientasi = canvas.width > canvas.height ? 'landscape' : 'portrait';
+      const pdf = new jsPDF({ orientation: orientasi, unit: 'px', format: [canvas.width, canvas.height] });
       pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save('Sertifikat-' + siswa.nama.replace(/\s+/g, '_') + '.pdf');
+      pdf.save('Piagam-' + siswa.nama.replace(/\s+/g, '_') + '.pdf');
     }catch(err){
       alert('Gagal membuat sertifikat: ' + err.message);
       console.error(err);
