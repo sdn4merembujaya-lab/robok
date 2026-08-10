@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Masuk — Robo Kebun</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#ffd9a0;--sky-bottom:#fff3da;
+    --soil:#7a4a2b;--soil-dark:#5e3620;
+    --card:#fffaf0;
+    --ink:#3a2f2a;--ink-soft:#7a6a5c;
+    --c-biru:#4a9fc9;--c-biru-dark:#2f7796;
+    --c-hijau:#5ba64a;--c-hijau-dark:#3f7d34;
+    --err:#c0392b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;font-family:'Quicksand',sans-serif;color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 45%, #f3e6c4 100%);
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  h1,.display{font-family:'Fredoka',sans-serif;}
+  .box{
+    width:100%;max-width:380px;background:var(--card);
+    border:4px solid var(--soil);border-radius:22px;
+    padding:26px 22px 24px;box-shadow:0 8px 0 rgba(0,0,0,.08);
+  }
+  .robot{font-size:40px;text-align:center;display:block;margin-bottom:4px;}
+  h1{text-align:center;margin:0 0 4px;font-size:24px;color:var(--soil-dark);}
+  .sub{text-align:center;color:var(--ink-soft);font-weight:600;font-size:13px;margin:0 0 18px;}
+
+  .role-toggle{display:flex;gap:8px;margin-bottom:18px;}
+  .role-toggle button{
+    flex:1;padding:10px;border-radius:12px;border:2px solid var(--soil);
+    background:#fff;font-family:'Fredoka',sans-serif;font-weight:600;font-size:14px;
+    color:var(--soil-dark);cursor:pointer;
+  }
+  .role-toggle button.active{background:var(--c-biru);border-color:var(--c-biru-dark);color:#fff;}
+
+  label{display:block;font-weight:700;font-size:13px;margin:12px 0 6px;color:var(--soil-dark);}
+  input{
+    width:100%;padding:11px 12px;border-radius:12px;border:2px solid #ddd0b8;
+    font-family:'Quicksand',sans-serif;font-weight:600;font-size:14px;outline:none;
+  }
+  input:focus{border-color:var(--c-biru);}
+
+  button.submit{
+    width:100%;margin-top:20px;padding:12px;border:none;border-radius:14px;
+    background:var(--c-hijau-dark);color:#fff;font-family:'Fredoka',sans-serif;
+    font-weight:600;font-size:15px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.15);
+  }
+  button.submit:active{transform:translateY(2px);box-shadow:none;}
+  button.submit:disabled{opacity:.6;cursor:default;}
+
+  #msg{text-align:center;font-weight:700;font-size:13px;margin-top:14px;min-height:18px;color:var(--err);}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <span class="robot">🤖</span>
+  <h1>Masuk ke Robo Kebun</h1>
+  <p class="sub">Pilih peran kamu, lalu masukkan username & password.</p>
+
+  <div class="role-toggle">
+    <button type="button" id="btnSiswa" class="active">🧑‍🎓 Siswa</button>
+    <button type="button" id="btnGuru">👩‍🏫 Guru</button>
+  </div>
+
+  <form id="loginForm">
+    <label for="username">Username</label>
+    <input id="username" type="text" autocomplete="username" required>
+
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+
+    <button type="submit" class="submit" id="submitBtn">Masuk</button>
+  </form>
+
+  <div id="msg"></div>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCJEpXP9XuKDik6Wbwk78Jq0jkd4Yp394DXskwYdFR_Dnx3zdd8_q54yav1ZPIOn5wAg/exec';
+
+  let role = 'siswa';
+  const btnSiswa = document.getElementById('btnSiswa');
+  const btnGuru = document.getElementById('btnGuru');
+  const msg = document.getElementById('msg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  btnSiswa.addEventListener('click', () => {
+    role = 'siswa';
+    btnSiswa.classList.add('active');
+    btnGuru.classList.remove('active');
+  });
+  btnGuru.addEventListener('click', () => {
+    role = 'guru';
+    btnGuru.classList.add('active');
+    btnSiswa.classList.remove('active');
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.textContent = '';
+
+    if (APPS_SCRIPT_URL.indexOf('GANTI_DENGAN') === 0) {
+      msg.textContent = 'URL Apps Script belum dipasang di login.html.';
+      return;
+    }
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Memeriksa...';
+
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'login', role, username, password })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        sessionStorage.setItem('robokebun_user', JSON.stringify({ role, user: data.user }));
+        window.location.href = (role === 'guru') ? 'dashboard-guru.html' : 'index.html';
+      } else {
+        msg.textContent = data.message || 'Username atau password salah.';
+      }
+    } catch (err) {
+      msg.textContent = 'Gagal menghubungi server. Coba lagi.';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Masuk';
+    }
+  });
+</script>
+</body>
+</html>
