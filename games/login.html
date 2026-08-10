@@ -131,7 +131,7 @@
 
       if (data.success) {
         sessionStorage.setItem('robokebun_user', JSON.stringify({ role, user: data.user, username }));
-        window.location.href = (role === 'guru') ? '../dashboard-guru.html' : 'index.html';
+        window.location.href = (role === 'guru') ? 'dashboard-guru.html' : 'index.html';
       } else {
         msg.textContent = data.message || 'Username atau password salah.';
       }
