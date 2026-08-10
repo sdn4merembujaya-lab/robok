@@ -48,11 +48,23 @@
   </div>
 
   <h1>📊 Dashboard Guru</h1>
-  <p class="sub">Rekap nilai siswa akan tampil di sini.</p>
+  <p class="sub">Rekap nilai siswa dari semua game.</p>
 
-  <div class="card">
-    Fitur rekap nilai per siswa sedang disiapkan — begini nanti tampilnya
-    setelah game mulai mengirim skor ke sistem.
+  <div class="card" id="loadingCard">Memuat data nilai...</div>
+
+  <div id="tableWrap" style="display:none;max-width:680px;margin:0 auto;">
+    <table id="nilaiTable" style="width:100%;border-collapse:collapse;background:var(--card);
+      border:4px solid var(--soil);border-radius:16px;overflow:hidden;">
+      <thead>
+        <tr style="background:var(--soil);color:#fff;font-family:'Fredoka',sans-serif;">
+          <th style="padding:10px 12px;text-align:left;">Nama Siswa</th>
+          <th style="padding:10px 12px;text-align:center;">Jumlah Main</th>
+          <th style="padding:10px 12px;text-align:center;">Rata-rata</th>
+          <th style="padding:10px 12px;text-align:left;">Main Terakhir</th>
+        </tr>
+      </thead>
+      <tbody id="nilaiBody"></tbody>
+    </table>
   </div>
 
 <script>
@@ -80,6 +92,77 @@
     sessionStorage.removeItem('robokebun_user');
     window.location.href = 'login.html';
   });
+
+  // ==== ambil & tampilkan rekap nilai ====
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCJEpXP9XuKDik6Wbwk78Jq0jkd4Yp394DXskwYdFR_Dnx3zdd8_q54yav1ZPIOn5wAg/exec';
+
+  async function ambilSheet(nama){
+    const res = await fetch(APPS_SCRIPT_URL + '?sheet=' + encodeURIComponent(nama));
+    const json = await res.json();
+    if(!json.success) throw new Error(json.message || ('Gagal mengambil ' + nama));
+    return json.data;
+  }
+
+  function persenDariSkor(skorStr){
+    const parts = String(skorStr).split('/');
+    if(parts.length !== 2) return 0;
+    const a = parseFloat(parts[0]), b = parseFloat(parts[1]);
+    if(!b) return 0;
+    return a / b;
+  }
+
+  async function muatRekap(){
+    try{
+      const [students, progress] = await Promise.all([
+        ambilSheet('STUDENTS'),
+        ambilSheet('PROGRESS')
+      ]);
+
+      const byStudent = {};
+      progress.forEach(function(p){
+        const id = p.StudentID;
+        if(!id) return;
+        if(!byStudent[id]) byStudent[id] = { count:0, sumPersen:0, last:null };
+        byStudent[id].count++;
+        byStudent[id].sumPersen += persenDariSkor(p.Skor);
+        const lastDate = byStudent[id].last ? new Date(byStudent[id].last.Tanggal) : null;
+        const thisDate = new Date(p.Tanggal);
+        if(!lastDate || thisDate > lastDate){ byStudent[id].last = p; }
+      });
+
+      const rows = students.map(function(s){
+        const m = byStudent[s.ID] || { count:0, sumPersen:0, last:null };
+        return {
+          nama: s.Nama || s.Username || '(tanpa nama)',
+          jumlahMain: m.count,
+          rataRata: m.count ? Math.round((m.sumPersen / m.count) * 100) + '%' : '-',
+          terakhir: m.last ? (m.last.Game + ' (' + m.last.Skor + ')') : '-'
+        };
+      });
+
+      rows.sort(function(a,b){ return b.jumlahMain - a.jumlahMain; });
+
+      const tbody = document.getElementById('nilaiBody');
+      tbody.innerHTML = '';
+      rows.forEach(function(r){
+        const tr = document.createElement('tr');
+        tr.style.borderTop = '1px solid #eee0c8';
+        tr.innerHTML =
+          '<td style="padding:9px 12px;">' + r.nama + '</td>' +
+          '<td style="padding:9px 12px;text-align:center;">' + r.jumlahMain + '</td>' +
+          '<td style="padding:9px 12px;text-align:center;">' + r.rataRata + '</td>' +
+          '<td style="padding:9px 12px;">' + r.terakhir + '</td>';
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('loadingCard').style.display = 'none';
+      document.getElementById('tableWrap').style.display = 'block';
+    }catch(err){
+      document.getElementById('loadingCard').textContent = 'Gagal memuat data: ' + err.message;
+    }
+  }
+
+  muatRekap();
 </script>
 </body>
 </html>
