@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Guru — Robo Kebun</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -12,239 +12,157 @@
     --soil:#7a4a2b;--soil-dark:#5e3620;
     --card:#fffaf0;
     --ink:#3a2f2a;--ink-soft:#7a6a5c;
-    --c-biru:#4a9fc9;--c-biru-dark:#2f7796;
+    --c-merah-dark:#b93b46;
     --c-hijau:#5ba64a;--c-hijau-dark:#3f7d34;
-    --c-ungu:#8b5fbf;
-    --c-oranye:#e08a2e;
-    --c-merah:#c0405a;
-    --gold:#f0b429;
-    --shadow:0 4px 0 rgba(90,54,32,0.15);
   }
   *{box-sizing:border-box;}
   body{
     margin:0;font-family:'Quicksand',sans-serif;color:var(--ink);
     background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 45%, #f3e6c4 100%);
-    min-height:100vh;
+    min-height:100vh;padding:20px 16px 60px;
   }
-  h1,h3,h4,.display{font-family:'Fredoka',sans-serif;}
+  h1,.display{font-family:'Fredoka',sans-serif;}
+  a{text-decoration:none;}
 
-  .topbar{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:14px 24px;background:var(--card);border-bottom:3px solid var(--soil);
-    position:sticky;top:0;z-index:50;
-  }
-  .brand{display:flex;align-items:center;gap:10px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:18px;color:var(--soil-dark);}
-  .brand .robot{font-size:22px;}
-  .who{display:flex;align-items:center;gap:12px;}
-  .who-info{display:flex;align-items:center;gap:10px;background:#fdeecb;border:2px solid var(--soil);border-radius:999px;padding:5px 14px 5px 6px;}
-  .avatar{
-    width:32px;height:32px;border-radius:50%;background:var(--c-oranye);
-    display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;
-    border:2px solid var(--soil);font-family:'Fredoka',sans-serif;
-  }
-  .who-name{font-weight:700;font-size:14px;color:var(--soil-dark);}
-  .role-badge{font-size:10.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
-  .logout-btn{
-    display:flex;align-items:center;gap:6px;background:#fff;border:2px solid var(--soil);
-    color:var(--soil-dark);font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;
-    cursor:pointer;box-shadow:var(--shadow);font-family:'Quicksand',sans-serif;
-  }
-  .logout-btn:hover{background:#fff3e0;}
-  .logout-btn:active{transform:translateY(2px);box-shadow:none;}
+  .topbar{max-width:680px;margin:0 auto 22px;display:flex;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .topbar .hello{font-weight:700;color:var(--soil-dark);font-size:15px;}
+  .topbar a.logout{background:var(--c-merah-dark);color:#fff;font-family:'Fredoka',sans-serif;
+    font-weight:600;font-size:13.5px;padding:8px 18px;border-radius:12px;
+    box-shadow:0 3px 0 rgba(0,0,0,.15);}
+  .topbar a.logout:active{transform:translateY(2px);box-shadow:none;}
 
-  .wrap{max-width:920px;margin:0 auto;padding:26px 20px 60px;}
-  .page-title{font-size:24px;color:var(--soil-dark);margin:0 0 4px;}
-  .page-sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 22px;}
+  h1{text-align:center;font-size:clamp(24px,5vw,32px);color:var(--soil-dark);margin:0 0 6px;}
+  .sub{text-align:center;color:var(--ink-soft);font-weight:600;font-size:14px;
+    max-width:520px;margin:0 auto 22px;}
 
-  .stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px;}
-  .stat-card{
-    flex:1;min-width:150px;background:var(--card);border:3px solid var(--soil);border-radius:18px;
-    padding:16px 18px;box-shadow:var(--shadow);
-  }
-  .stat-card .num{font-family:'Fredoka',sans-serif;font-size:26px;color:var(--soil-dark);}
-  .stat-card .lbl{font-size:12.5px;color:var(--ink-soft);font-weight:700;}
+  .btn-refresh{display:block;margin:0 auto 22px;background:var(--c-hijau);color:#fff;border:none;
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:13.5px;padding:9px 20px;
+    border-radius:12px;cursor:pointer;box-shadow:0 3px 0 var(--c-hijau-dark);}
+  .btn-refresh:active{transform:translateY(2px);box-shadow:none;}
 
-  .section-title{font-size:16px;color:var(--soil-dark);margin:0 0 12px;font-family:'Fredoka',sans-serif;}
+  .card{max-width:680px;margin:0 auto 18px;background:var(--card);border:4px solid var(--soil);
+    border-radius:22px;padding:22px;box-shadow:0 8px 0 rgba(0,0,0,.08);text-align:center;
+    color:var(--ink-soft);font-weight:600;}
 
-  .table-card{background:var(--card);border:3px solid var(--soil);border-radius:20px;padding:8px;box-shadow:var(--shadow);overflow-x:auto;}
-  table{width:100%;border-collapse:collapse;min-width:560px;}
-  th,td{text-align:left;padding:12px 14px;font-size:13.5px;}
-  thead th{color:var(--ink-soft);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.03em;border-bottom:2px solid #eadcb9;}
-  tbody tr{border-bottom:1px solid #f1e6cb;}
-  tbody tr:last-child{border-bottom:none;}
-  .student-cell{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--soil-dark);}
-  .mini-avatar{
-    width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    color:white;font-size:12px;font-weight:700;font-family:'Fredoka',sans-serif;
-  }
-  .bar-wrap{display:flex;align-items:center;gap:8px;}
-  .bar-track{flex:1;height:8px;border-radius:999px;background:#eee0c2;overflow:hidden;min-width:80px;}
-  .bar-fill{height:100%;border-radius:999px;}
-  .bar-pct{font-size:11.5px;color:var(--ink-soft);font-weight:700;min-width:32px;text-align:right;}
-
-  .empty{
-    text-align:center;padding:40px 20px;color:var(--ink-soft);font-size:13.5px;
-  }
-
-  .loading-screen{
-    position:fixed;inset:0;background:var(--sky-bottom);display:flex;align-items:center;justify-content:center;
-    font-family:'Fredoka',sans-serif;font-size:16px;color:var(--soil-dark);z-index:999;
-  }
+  .search-wrap{max-width:680px;margin:0 auto 12px;}
+  #searchInput{width:100%;padding:11px 14px;border-radius:12px;border:2px solid #ddd0b8;
+    font-family:'Quicksand',sans-serif;font-weight:600;font-size:14px;outline:none;}
+  #searchInput:focus{border-color:var(--c-hijau);}
 </style>
 </head>
 <body>
 
-<div class="loading-screen" id="loadingScreen">Memuat…</div>
-
-<div class="topbar">
-  <div class="brand"><span class="robot">🤖</span> Robo Kebun</div>
-  <div class="who">
-    <div class="who-info">
-      <div class="avatar" id="avatarInitial">?</div>
-      <div>
-        <div class="who-name" id="teacherName">—</div>
-        <div class="role-badge">Guru</div>
-      </div>
-    </div>
-    <button class="logout-btn" id="logoutBtn">⎋ Keluar</button>
+  <div class="topbar">
+    <span class="hello" id="helloText">Halo, Guru</span>
+    <a class="logout" href="#" id="logoutBtn">Keluar</a>
   </div>
-</div>
 
-<div class="wrap">
-  <h1 class="page-title">Dashboard Guru</h1>
-  <p class="page-sub">Pantau progres belajar siswa di semua modul Robo Kebun.</p>
+  <h1>📊 Dashboard Guru</h1>
+  <p class="sub">Rekap nama & skor siswa dari sheet "Siswa" — otomatis update tiap siswa menyelesaikan ladang.</p>
 
-  <div class="stat-row" id="statRow"></div>
+  <button class="btn-refresh" id="btnRefresh">🔄 Muat Ulang Data</button>
 
-  <h3 class="section-title">Progres Siswa</h3>
-  <div class="table-card">
-    <table>
+  <div class="search-wrap">
+    <input id="searchInput" type="text" placeholder="🔎 Cari nama siswa...">
+  </div>
+
+  <div class="card" id="loadingCard">Memuat data siswa...</div>
+
+  <div id="tableWrap" style="display:none;max-width:680px;margin:0 auto;">
+    <table id="nilaiTable" style="width:100%;border-collapse:collapse;background:var(--card);
+      border:4px solid var(--soil);border-radius:16px;overflow:hidden;">
       <thead>
-        <tr>
-          <th>Siswa</th>
-          <th>Modul Aktif</th>
-          <th>Progres Keseluruhan</th>
-          <th>Level Selesai</th>
+        <tr style="background:var(--soil);color:#fff;font-family:'Fredoka',sans-serif;">
+          <th style="padding:10px 12px;text-align:left;">Nama Siswa</th>
+          <th style="padding:10px 12px;text-align:left;">Nama Sekolah</th>
+          <th style="padding:10px 12px;text-align:center;">Skor</th>
         </tr>
       </thead>
-      <tbody id="studentRows"></tbody>
+      <tbody id="nilaiBody"></tbody>
     </table>
   </div>
-</div>
 
 <script>
-const SESSION_KEY = 'robokebun_user';
-
-function getSession(){
-  try{
-    const raw = sessionStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  }catch(e){ return null; }
-}
-
-const session = getSession();
-
-if(!session){
-  window.location.href = 'login.html';
-} else if(session.role !== 'guru'){
-  // Siswa tidak boleh masuk dashboard guru
-  window.location.href = 'index.html';
-} else {
-  document.getElementById('loadingScreen').style.display = 'none';
-  initTeacherDashboard(session);
-}
-
-function initTeacherDashboard(session){
-  const displayName = (session.user && (session.user.name || session.user.username || session.user.nama)) || 'Guru';
-  document.getElementById('teacherName').textContent = displayName;
-  document.getElementById('avatarInitial').textContent = displayName.trim().charAt(0).toUpperCase() || 'G';
-
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    const ok = confirm(`Yakin mau keluar dari akun ${displayName}?`);
-    if(ok){
-      sessionStorage.removeItem(SESSION_KEY);
+  var sess = null;
+  (function () {
+    var raw = sessionStorage.getItem('robokebun_user');
+    if (!raw) { window.location.href = 'login.html'; return; }
+    try {
+      sess = JSON.parse(raw);
+      if (sess.role !== 'guru') { window.location.href = 'login.html'; return; }
+      var u = sess.user || {};
+      var nama = u.nama || u.name || sess.username || 'Guru';
+      document.getElementById('helloText').textContent = 'Halo, ' + nama;
+    } catch (err) {
       window.location.href = 'login.html';
     }
+  })();
+
+  document.getElementById('logoutBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    sessionStorage.removeItem('robokebun_user');
+    window.location.href = 'login.html';
   });
 
-  const MODULES = [
-    { id:'m1', name:'Robo Kebun', color:'var(--c-biru)', levels:6 },
-    { id:'m2', name:'Kode Blok', color:'var(--c-hijau)', levels:5 },
-    { id:'m3', name:'Ladang Pola', color:'var(--c-ungu)', levels:4 },
-    { id:'m4', name:'Aktivitas Interaktif', color:'var(--c-oranye)', levels:4 },
-    { id:'m5', name:'Koding Matematika', color:'var(--c-merah)', levels:5 },
-  ];
-  const totalLevels = MODULES.reduce((s,m)=>s+m.levels,0);
+  // ==== ambil & tampilkan daftar siswa + skor ====
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCJEpXP9XuKDik6Wbwk78Jq0jkd4Yp394DXskwYdFR_Dnx3zdd8_q54yav1ZPIOn5wAg/exec';
 
-  /* ===== Kumpulkan progres semua siswa yang pernah login di perangkat ini =====
-     Progres siswa disimpan index.html dengan kunci "robokebun_progress_<username>".
-     Ini contoh ringan untuk demo lokal; di versi produksi, ganti dengan fetch
-     data progres siswa dari Apps Script/Sheet yang sama seperti proses login. */
-  function collectStudentsFromSession(){
-    const students = [];
-    for(let i=0; i<sessionStorage.length; i++){
-      const key = sessionStorage.key(i);
-      if(key && key.startsWith('robokebun_progress_')){
-        const username = key.replace('robokebun_progress_', '');
-        let data = {};
-        try{ data = JSON.parse(sessionStorage.getItem(key)); }catch(e){}
-        students.push({ username, progress: data });
-      }
+  let semuaSiswa = [];
+
+  function renderTabel(list){
+    const tbody = document.getElementById('nilaiBody');
+    tbody.innerHTML = '';
+    if (list.length === 0){
+      tbody.innerHTML = '<tr><td colspan="3" style="padding:16px;text-align:center;color:var(--ink-soft);">Belum ada data siswa.</td></tr>';
+      return;
     }
-    return students;
+    list.forEach(function(s){
+      const tr = document.createElement('tr');
+      tr.style.borderTop = '1px solid #eee0c8';
+      tr.innerHTML =
+        '<td style="padding:9px 12px;">' + s.nama + '</td>' +
+        '<td style="padding:9px 12px;">' + (s.namaSekolah || '-') + '</td>' +
+        '<td style="padding:9px 12px;text-align:center;font-weight:700;">' + s.skor + '</td>';
+      tbody.appendChild(tr);
+    });
   }
 
-  const students = collectStudentsFromSession();
-
-  /* ===== Statistik ringkas ===== */
-  const statRow = document.getElementById('statRow');
-  const activeModuleCount = MODULES.length;
-  statRow.innerHTML = `
-    <div class="stat-card"><div class="num">${students.length}</div><div class="lbl">Siswa aktif di perangkat ini</div></div>
-    <div class="stat-card"><div class="num">${activeModuleCount}</div><div class="lbl">Modul tersedia</div></div>
-    <div class="stat-card"><div class="num">${totalLevels}</div><div class="lbl">Total level</div></div>
-  `;
-
-  /* ===== Tabel progres ===== */
-  const tbody = document.getElementById('studentRows');
-
-  if(students.length === 0){
-    tbody.innerHTML = `<tr><td colspan="4"><div class="empty">Belum ada data siswa di perangkat ini.<br>Progres akan muncul begitu siswa login &amp; mulai bermain lewat browser ini.</div></td></tr>`;
-  } else {
-    tbody.innerHTML = students.map(s => {
-      let doneLevels = 0;
-      let activeModuleName = '—';
-      MODULES.forEach(m => {
-        const p = s.progress[m.id];
-        if(p){
-          doneLevels += (p.completedLevels || []).length;
-          if(activeModuleName === '—' && (p.completedLevels||[]).length < m.levels){
-            activeModuleName = m.name;
-          }
-        }
+  async function muatDaftarSiswa(){
+    document.getElementById('loadingCard').style.display = 'block';
+    document.getElementById('loadingCard').textContent = 'Memuat data siswa...';
+    document.getElementById('tableWrap').style.display = 'none';
+    try{
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'daftarSiswa' })
       });
-      const pct = Math.round((doneLevels / totalLevels) * 100);
-      const initial = s.username.trim().charAt(0).toUpperCase();
-      return `
-        <tr>
-          <td>
-            <div class="student-cell">
-              <div class="mini-avatar" style="background:var(--c-biru)">${initial}</div>
-              ${s.username}
-            </div>
-          </td>
-          <td>${activeModuleName}</td>
-          <td>
-            <div class="bar-wrap">
-              <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:var(--c-hijau-dark)"></div></div>
-              <div class="bar-pct">${pct}%</div>
-            </div>
-          </td>
-          <td>${doneLevels}/${totalLevels}</td>
-        </tr>`;
-    }).join('');
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message || 'Gagal mengambil data siswa');
+
+      semuaSiswa = json.siswa || [];
+      // urutkan skor tertinggi dulu
+      semuaSiswa.sort(function(a,b){ return b.skor - a.skor; });
+
+      renderTabel(semuaSiswa);
+      document.getElementById('loadingCard').style.display = 'none';
+      document.getElementById('tableWrap').style.display = 'block';
+    }catch(err){
+      document.getElementById('loadingCard').textContent = 'Gagal memuat data: ' + err.message;
+    }
   }
-}
+
+  document.getElementById('btnRefresh').addEventListener('click', muatDaftarSiswa);
+
+  document.getElementById('searchInput').addEventListener('input', function(e){
+    const kw = e.target.value.trim().toLowerCase();
+    const hasil = semuaSiswa.filter(function(s){
+      return s.nama.toLowerCase().indexOf(kw) !== -1;
+    });
+    renderTabel(hasil);
+  });
+
+  muatDaftarSiswa();
 </script>
 </body>
 </html>
