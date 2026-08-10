@@ -155,6 +155,41 @@
   })();
   </script>
 
+  <script>
+  var SCORE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCJEpXP9XuKDik6Wbwk78Jq0jkd4Yp394DXskwYdFR_Dnx3zdd8_q54yav1ZPIOn5wAg/exec';
+
+  function kirimSkorOtomatis(moduleKey, poin){
+    try{
+      if (localStorage.getItem('skorkirim_' + moduleKey) === 'true') return;
+      var raw = sessionStorage.getItem('robokebun_user');
+      if (!raw) return;
+      var sess = JSON.parse(raw);
+      var username = (sess.user && sess.user.username) || sess.username;
+      if (!username) return;
+      fetch(SCORE_APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'tambahSkor', username: username, poin: poin })
+      }).then(function(){
+        localStorage.setItem('skorkirim_' + moduleKey, 'true');
+      }).catch(function(){});
+    }catch(e){}
+  }
+
+  function kirimSkorTambahan(poin){
+    try{
+      var raw = sessionStorage.getItem('robokebun_user');
+      if (!raw) return;
+      var sess = JSON.parse(raw);
+      var username = (sess.user && sess.user.username) || sess.username;
+      if (!username) return;
+      fetch(SCORE_APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'tambahSkor', username: username, poin: poin })
+      }).catch(function(){});
+    }catch(e){}
+  }
+  </script>
+
 
   <div class="header">
     <div class="eyebrow">🤖 CODING UNPLUGGED</div>
@@ -303,6 +338,7 @@
             solved.push(currentLevel);
             localStorage.setItem('robokebun_solved', JSON.stringify(solved));
             buildLevelPicker();
+            if (solved.length >= LEVELS.length) kirimSkorOtomatis('robokebun', 20);
           }
         } else {
           showMessage('fail','Belum sampai ke bendera. Coba atur ulang urutannya!');
