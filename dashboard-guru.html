@@ -49,6 +49,13 @@
   #searchInput{width:100%;padding:11px 14px;border-radius:12px;border:2px solid #ddd0b8;
     font-family:'Quicksand',sans-serif;font-weight:600;font-size:14px;outline:none;}
   #searchInput:focus{border-color:var(--c-hijau);}
+
+  .badge{display:inline-block;padding:4px 12px;border-radius:999px;font-weight:700;font-size:12.5px;}
+  .badge-sangat{background:#e2f3da;color:#3f7d34;}
+  .badge-baik{background:#fff1cc;color:#9a6b00;}
+  .badge-cukup{background:#ffe4c2;color:#b9711a;}
+  .badge-kurang{background:#fde2e1;color:#b93b46;}
+  .badge-buruk{background:#f5d2d0;color:#8a1f27;}
 </style>
 </head>
 <body>
@@ -77,6 +84,7 @@
           <th style="padding:10px 12px;text-align:left;">Nama Siswa</th>
           <th style="padding:10px 12px;text-align:left;">Nama Sekolah</th>
           <th style="padding:10px 12px;text-align:center;">Skor</th>
+          <th style="padding:10px 12px;text-align:center;">Predikat</th>
         </tr>
       </thead>
       <tbody id="nilaiBody"></tbody>
@@ -110,20 +118,30 @@
 
   let semuaSiswa = [];
 
+  function getPredikat(skor){
+    if (skor >= 91) return { label: 'Sangat Baik', kelas: 'badge-sangat' };
+    if (skor >= 76) return { label: 'Baik', kelas: 'badge-baik' };
+    if (skor >= 61) return { label: 'Cukup', kelas: 'badge-cukup' };
+    if (skor >= 51) return { label: 'Kurang', kelas: 'badge-kurang' };
+    return { label: 'Buruk', kelas: 'badge-buruk' };
+  }
+
   function renderTabel(list){
     const tbody = document.getElementById('nilaiBody');
     tbody.innerHTML = '';
     if (list.length === 0){
-      tbody.innerHTML = '<tr><td colspan="3" style="padding:16px;text-align:center;color:var(--ink-soft);">Belum ada data siswa.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" style="padding:16px;text-align:center;color:var(--ink-soft);">Belum ada data siswa.</td></tr>';
       return;
     }
     list.forEach(function(s){
       const tr = document.createElement('tr');
       tr.style.borderTop = '1px solid #eee0c8';
+      const pred = getPredikat(s.skor);
       tr.innerHTML =
         '<td style="padding:9px 12px;">' + s.nama + '</td>' +
         '<td style="padding:9px 12px;">' + (s.namaSekolah || '-') + '</td>' +
-        '<td style="padding:9px 12px;text-align:center;font-weight:700;">' + s.skor + '</td>';
+        '<td style="padding:9px 12px;text-align:center;font-weight:700;">' + s.skor + '</td>' +
+        '<td style="padding:9px 12px;text-align:center;"><span class="badge ' + pred.kelas + '">' + pred.label + '</span></td>';
       tbody.appendChild(tr);
     });
   }
