@@ -2,105 +2,142 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Ladang Pola — Ayo Ngoding!</title>
+<title>Robo Kebun — Kode Blok</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* ===== palet: ladang bunga sore hari (senada dengan dunia Robo Kebun, nuansa berbeda) ===== */
-    --sky-top:#ffd9a0;--sky-bottom:#fff3da;
     --soil:#7a4a2b;--soil-dark:#5e3620;
-    --card:#fffaf0;
-    --ink:#3a2f2a;--ink-soft:#7a6a5c;
-
-    --c-merah:#e2555f;--c-merah-dark:#b93b46;
-    --c-kuning:#f4c548;--c-kuning-dark:#cf9e1f;
-    --c-biru:#4a9fc9;--c-biru-dark:#2f7796;
-    --c-hijau:#5ba64a;--c-hijau-dark:#3f7d34;
-    --c-ungu:#9b72cf;--c-ungu-dark:#7550a8;
-    --c-oranye:#e88a3c;--c-oranye-dark:#bf6a26;
+    --leaf:#5ba64a;--leaf-dark:#3f7d34;--leaf-light:#8fd177;
+    --cream:#fbf3df;--card:#fffaf0;
+    --pot:#d9713c;--pot-dark:#b2552a;
+    --sun:#ffc93c;--sun-dark:#e6a819;
+    --sky:#bfe6e0;
+    --ink:#2f3a2a;--ink-soft:#65735c;
+    --berry:#d64550;--berry-dark:#a8323c;
+    --water:#4a9fc9;--water-dark:#2f7796;
+    --rock:#8a8f8a;--rock-dark:#5f6560;
+    --hole:#2b2f3a;--hole-dark:#14161c;
+    --log:#a56a35;--log-dark:#7c4c22;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
     font-family:'Quicksand',sans-serif;color:var(--ink);
-    background:linear-gradient(180deg,var(--sky-top) 0%, var(--sky-bottom) 55%);
+    background:
+      radial-gradient(circle at 12% 8%, rgba(255,255,255,.5), transparent 40%),
+      linear-gradient(180deg,var(--sky) 0%, #dff2e6 38%, var(--cream) 38%, var(--cream) 100%);
     min-height:100vh;overflow-x:hidden;
   }
   h1,h2,h3,.display{font-family:'Fredoka',sans-serif;}
   button{font-family:inherit;}
 
+  .paper-sun{position:fixed;top:18px;right:22px;width:70px;height:70px;border-radius:50%;
+    background:var(--sun);box-shadow:0 6px 0 var(--sun-dark);z-index:0;
+    animation:sunPulse 4s ease-in-out infinite;}
+  @keyframes sunPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+
   .header{position:relative;z-index:5;text-align:center;padding:22px 16px 6px;}
-  .eyebrow{display:inline-block;background:var(--c-ungu);color:#fff;font-weight:700;font-size:12px;
-    letter-spacing:.04em;padding:5px 14px;border-radius:20px;box-shadow:0 3px 0 var(--c-ungu-dark);
+  .eyebrow{display:inline-block;background:var(--leaf);color:#fff;font-weight:700;font-size:12px;
+    letter-spacing:.04em;padding:5px 14px;border-radius:20px;box-shadow:0 3px 0 var(--leaf-dark);
     margin-bottom:10px;}
   .header h1{margin:0;font-size:32px;color:var(--soil-dark);letter-spacing:.01em;}
   .header p{margin:6px 0 0;color:var(--ink-soft);font-weight:600;font-size:14px;}
 
   .level-row{position:relative;z-index:5;display:flex;justify-content:center;gap:9px;
-    padding:16px 10px 4px;flex-wrap:wrap;max-width:640px;margin:0 auto;}
-  .level-dot{width:38px;height:38px;border-radius:50%;border:3px solid var(--c-ungu-dark);
-    background:var(--card);font-weight:700;font-size:14px;color:var(--c-ungu-dark);cursor:pointer;
-    display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--c-ungu-dark);
-    transition:transform .1s;flex-shrink:0;}
+    padding:16px 10px 4px;flex-wrap:wrap;}
+  .level-dot{width:40px;height:40px;border-radius:50%;border:3px solid var(--leaf-dark);
+    background:var(--card);font-weight:700;font-size:15px;color:var(--leaf-dark);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--leaf-dark);
+    transition:transform .1s;}
   .level-dot:hover{transform:translateY(-2px);}
-  .level-dot.active{background:var(--c-ungu);color:#fff;}
-  .level-dot.solved{background:var(--c-kuning);border-color:var(--c-kuning-dark);color:var(--soil-dark);
-    box-shadow:0 3px 0 var(--c-kuning-dark);}
+  .level-dot.active{background:var(--leaf);color:#fff;}
+  .level-dot.solved{background:var(--sun);border-color:var(--sun-dark);color:var(--soil-dark);
+    box-shadow:0 3px 0 var(--sun-dark);}
   .level-dot.solved::after{content:'✓';}
 
-  .stage{position:relative;z-index:5;max-width:760px;margin:14px auto 40px;padding:0 16px;}
+  .stage{position:relative;z-index:5;max-width:1000px;margin:10px auto 40px;padding:0 16px;
+    display:grid;grid-template-columns:1fr;gap:18px;}
+  @media(min-width:860px){ .stage{grid-template-columns:1.25fr 1fr;align-items:start;} }
 
-  .card{background:var(--card);border:4px solid var(--soil);border-radius:22px;
-    padding:20px 18px;box-shadow:0 8px 0 rgba(0,0,0,.08);}
-  .card-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px;}
-  .card-title h2{margin:0;font-size:19px;color:var(--soil-dark);}
-  .card p.instr{margin:0 0 18px;color:var(--ink-soft);font-weight:600;font-size:13.5px;}
+  .board-card{background:var(--card);border:4px solid var(--soil);border-radius:22px;
+    padding:16px;box-shadow:0 8px 0 rgba(0,0,0,.08);}
+  .board-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .board-title h2{margin:0;font-size:18px;color:var(--soil-dark);}
+  .goal-chip{background:var(--berry);color:#fff;font-weight:700;font-size:12px;padding:5px 12px;
+    border-radius:14px;box-shadow:0 3px 0 var(--berry-dark);}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 10px;font-size:11.5px;
+    font-weight:700;color:var(--ink-soft);}
+  .legend span{display:inline-flex;align-items:center;gap:4px;background:#f1e6cb;border-radius:10px;padding:3px 8px;}
+  .board-wrap{display:flex;justify-content:center;}
+  #board{display:grid;gap:4px;background:var(--soil);padding:8px;border-radius:16px;}
+  .cell{width:var(--cell-size,50px);height:var(--cell-size,50px);border-radius:9px;display:flex;
+    align-items:center;justify-content:center;font-size:calc(var(--cell-size,50px) * 0.5);
+    position:relative;transition:background .2s;}
+  .cell.path{background:#e7d6b0;}
+  .cell.path.trail{background:var(--leaf-light);}
+  .cell.path.error{background:#f2a5a5;}
+  .cell.obst-rock{background:var(--rock);}
+  .cell.obst-hole{background:var(--hole);}
+  .cell.obst-log{background:var(--log);}
+  .cell .tile-goal{font-size:calc(var(--cell-size,50px) * 0.5);filter:drop-shadow(0 2px 0 rgba(0,0,0,.15));}
+  .robot{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:calc(var(--cell-size,50px) * 0.52);transition:left .26s ease, top .26s ease, transform .18s ease;
+    filter:drop-shadow(0 3px 0 rgba(0,0,0,.18));}
+  .facing-badge{position:absolute;font-size:calc(var(--cell-size,50px)*0.28);
+    background:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;
+    justify-content:center;box-shadow:0 2px 0 rgba(0,0,0,.15);top:-6px;right:-6px;}
 
-  /* ===== deret pola (flower row) ===== */
-  .pattern-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
-    background:#f6ecd9;border:3px dashed #e0cda0;border-radius:16px;padding:18px 14px;margin-bottom:20px;}
-  .flower{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    font-size:24px;position:relative;box-shadow:0 4px 0 rgba(0,0,0,.14);flex-shrink:0;
-    transition:transform .15s, box-shadow .15s;}
-  .flower.filled{color:#fff;}
-  .flower.blank{background:#fff;border:3px dashed #cbb98c;box-shadow:none;color:#cbb98c;font-weight:800;
-    cursor:pointer;}
-  .flower.blank.selected{border-color:var(--c-ungu);background:#f2e9ff;color:var(--c-ungu);
-    transform:translateY(-3px);box-shadow:0 4px 0 var(--c-ungu-dark);}
-  .flower.blank.wrong{background:#fbe1e1;border-color:var(--c-merah);animation:shake .35s;}
-  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
-
-  .color-merah{background:var(--c-merah);box-shadow:0 4px 0 var(--c-merah-dark);}
-  .color-kuning{background:var(--c-kuning);box-shadow:0 4px 0 var(--c-kuning-dark);}
-  .color-biru{background:var(--c-biru);box-shadow:0 4px 0 var(--c-biru-dark);}
-  .color-hijau{background:var(--c-hijau);box-shadow:0 4px 0 var(--c-hijau-dark);}
-  .color-ungu{background:var(--c-ungu);box-shadow:0 4px 0 var(--c-ungu-dark);}
-  .color-oranye{background:var(--c-oranye);box-shadow:0 4px 0 var(--c-oranye-dark);}
-
-  /* ===== palet warna untuk dipilih ===== */
-  .palette-label{font-weight:700;font-size:13px;color:var(--ink-soft);margin-bottom:8px;text-align:center;}
-  .palette{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:18px;}
-  .swatch{width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;color:#fff;font-size:18px;
-    display:flex;align-items:center;justify-content:center;transition:transform .12s;}
-  .swatch:hover{transform:translateY(-3px);}
-  .swatch:active{transform:translateY(1px);}
-
-  .card-foot{display:flex;justify-content:center;gap:10px;}
-  .btn-check{background:linear-gradient(180deg,#8fe08f,var(--c-hijau));color:#fff;border:none;
-    padding:12px 28px;border-radius:16px;font-weight:700;font-size:15px;cursor:pointer;
-    box-shadow:0 4px 0 var(--c-hijau-dark);}
-  .btn-check:disabled{opacity:.5;cursor:not-allowed;}
-  .btn-reset{background:#eee2c9;color:var(--soil-dark);border:none;padding:12px 20px;
+  .board-foot{display:flex;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
+  .btn-run{background:linear-gradient(180deg,#8fe08f,var(--leaf));color:#fff;border:none;
+    padding:12px 26px;border-radius:16px;font-weight:700;font-size:15px;cursor:pointer;
+    box-shadow:0 4px 0 var(--leaf-dark);}
+  .btn-run:disabled{opacity:.55;cursor:not-allowed;}
+  .btn-reset{background:#eee2c9;color:var(--soil-dark);border:none;padding:12px 18px;
     border-radius:16px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 0 #cdbb8f;}
+
+  .code-card{background:var(--card);border:4px solid var(--soil);border-radius:22px;
+    padding:18px;box-shadow:0 8px 0 rgba(0,0,0,.08);}
+  .code-card h2{margin:0 0 4px;font-size:18px;color:var(--soil-dark);}
+  .code-card .sub{margin:0 0 14px;color:var(--ink-soft);font-weight:600;font-size:13px;}
+
+  .cmd-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+  .cmd-btn{border:none;border-radius:14px;padding:10px 4px;font-weight:700;font-size:17px;
+    cursor:pointer;color:#fff;display:flex;flex-direction:column;align-items:center;gap:2px;}
+  .cmd-btn span.lbl{font-size:9.5px;font-weight:700;text-align:center;line-height:1.15;}
+  .cmd-btn.turn{background:linear-gradient(180deg,#6fc2ea,var(--water));box-shadow:0 3px 0 var(--water-dark);}
+  .cmd-btn.move{background:linear-gradient(180deg,#8fe0a0,var(--leaf));box-shadow:0 3px 0 var(--leaf-dark);
+    grid-column:span 3;flex-direction:row;justify-content:center;padding:12px;font-size:18px;}
+  .cmd-btn.repeat{background:linear-gradient(180deg,#f4b866,var(--pot));box-shadow:0 3px 0 var(--pot-dark);
+    grid-column:span 3;flex-direction:row;justify-content:center;padding:11px;font-size:15px;}
+  .cmd-btn:active{transform:translateY(2px);}
+  .cmd-btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  .program-label{font-weight:700;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;
+    display:flex;align-items:center;justify-content:space-between;}
+  .program-label button{background:none;border:none;color:var(--berry);font-weight:700;
+    font-size:12px;cursor:pointer;text-decoration:underline;}
+  .program-strip{min-height:64px;background:#f1e6cb;border:3px dashed #d9c69a;border-radius:14px;
+    padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;align-content:flex-start;}
+  .placeholder{color:#b3a37a;font-weight:600;font-size:12.5px;padding:8px;}
+  .chip{border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:12px;color:#fff;font-weight:700;position:relative;cursor:pointer;flex-shrink:0;
+    padding:8px 10px;gap:4px;}
+  .chip::after{content:'×';position:absolute;top:-6px;right:-6px;background:var(--berry);
+    color:#fff;width:16px;height:16px;border-radius:50%;font-size:11px;line-height:16px;
+    text-align:center;box-shadow:0 1px 0 var(--berry-dark);}
+  .chip.turn{background:var(--water);}
+  .chip.move{background:var(--leaf-dark);}
+  .chip.active{outline:3px solid var(--sun);outline-offset:1px;}
+
+  .step-counter{margin-top:10px;font-size:12.5px;color:var(--ink-soft);font-weight:700;text-align:right;}
 
   .message{margin-top:14px;padding:12px 14px;border-radius:14px;font-weight:700;font-size:14px;
     text-align:center;display:none;}
   .message.show{display:block;}
-  .message.win{background:#e3f5df;color:var(--c-hijau-dark);}
-  .message.fail{background:#fbe1e1;color:var(--c-merah-dark);}
-  .message.hint{background:#fdf0d8;color:var(--c-oranye-dark);}
+  .message.win{background:#e3f5df;color:var(--leaf-dark);}
+  .message.fail{background:#fbe1e1;color:var(--berry-dark);}
 
   .confetti{position:fixed;top:-10px;width:9px;height:14px;z-index:99;pointer-events:none;
     animation:fall linear forwards;}
@@ -110,12 +147,11 @@
     font-weight:600;padding:6px 16px 30px;}
 
   @media(max-width:420px){
-    .flower{width:42px;height:42px;font-size:20px;}
-    .swatch{width:40px;height:40px;}
+    .cell{width:40px;height:40px;font-size:20px;}
     .header h1{font-size:26px;}
   }
 
-  /* ===== topbar navigasi (nama siswa / lanjut / keluar) ===== */
+  /* ===== topbar navigasi (nama siswa / lanjut / keluar) — sama persis dengan modul lain ===== */
   .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
     flex-wrap:wrap;gap:8px;background:var(--card);border-bottom:4px solid var(--soil);padding:10px 16px;}
   .topbar-user{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;color:var(--soil-dark);}
@@ -127,12 +163,26 @@
     cursor:pointer;color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18);font-family:inherit;}
   .topbar-btn:active{transform:translateY(2px);box-shadow:none;}
   .topbar-home{background:#8a97a3;box-shadow:0 3px 0 #6b7680;}
-  .topbar-next{background:var(--c-ungu);box-shadow:0 3px 0 var(--c-ungu-dark);}
+  .topbar-next{background:var(--leaf);box-shadow:0 3px 0 var(--leaf-dark);}
   .topbar-logout{background:#c0392b;box-shadow:0 3px 0 #922017;}
   @media(max-width:480px){.topbar{padding:8px 10px;} .topbar-progress{display:none;}}
 </style>
 </head>
 <body>
+
+  <!-- ============================================================
+       BLOK NAVIGASI ANTAR-MODUL (topbar + cek sesi + kirim skor)
+       Blok ini disalin apa adanya dari modul lain (ladang-pola.html
+       dll) supaya semua "ladang/soal" berjalan konsisten. Kalau mau
+       menambah modul soal baru:
+         1. Tambahkan nama file & label ke LADANG_ORDER / LADANG_LABELS
+            di SEMUA file modul (termasuk file yang baru).
+         2. Salin 3 blok <script> di bawah ini (topbar, cek sesi,
+            kirim skor) ke file modul baru, tanpa diubah.
+         3. Ganti THIS_FILE di file modul baru sesuai nama filenya.
+         4. Panggil kirimSkorOtomatis('kunciModulBaru', poin) saat
+            semua level modul baru itu selesai dikerjakan.
+       ============================================================ -->
   <div class="topbar">
     <div class="topbar-user"><span class="tb-avatar">🧑‍🎓</span><span id="tbName">Siswa</span></div>
     <div class="topbar-actions">
@@ -144,9 +194,11 @@
   </div>
   <script>
   (function(){
+    // Daftar urutan semua modul soal. Tambah baris baru di sini (dan di
+    // file modul lain) setiap kali ada soal/aktivitas baru dibuat.
     var LADANG_ORDER = ['robo-kebun.html','robo-kebun-blok.html','ladang-pola.html','aktivitas-interaktif.html','matematika.html'];
     var LADANG_LABELS = ['Robo Kebun','Kode Blok','Ladang Pola','Aktivitas Interaktif','Matematika'];
-    var THIS_FILE = 'ladang-pola.html';
+    var THIS_FILE = 'robo-kebun-blok.html';
     var idx = LADANG_ORDER.indexOf(THIS_FILE);
 
     var raw = sessionStorage.getItem('robokebun_user');
@@ -189,6 +241,9 @@
   </script>
 
   <script>
+  // Endpoint & fungsi kirim skor — identik di semua modul, jangan diubah
+  // per file. moduleKey harus unik per modul (dipakai sbg kunci localStorage
+  // biar skor tidak terkirim dobel).
   var SCORE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCJEpXP9XuKDik6Wbwk78Jq0jkd4Yp394DXskwYdFR_Dnx3zdd8_q54yav1ZPIOn5wAg/exec';
 
   function kirimSkorOtomatis(moduleKey, poin){
@@ -222,65 +277,169 @@
     }catch(e){}
   }
   </script>
+  <!-- ===================== AKHIR BLOK NAVIGASI ===================== -->
 
+  <div class="paper-sun"></div>
 
   <div class="header">
-    <div class="eyebrow">🌼 CODING UNPLUGGED</div>
-    <h1>Ladang Pola</h1>
-    <p>Perhatikan urutan warnanya, lalu isi bunga yang kosong sesuai polanya!</p>
+    <div class="eyebrow">🌱 CODING UNPLUGGED · KODE BLOK</div>
+    <h1>Robo Kebun</h1>
+    <p>Atur arah hadap Robo (Turn), lalu suruh Maju — atau Ulangi programnya — sampai Robo sampai ke wortel!</p>
   </div>
 
   <div class="level-row" id="levelRow"></div>
 
   <div class="stage">
-    <div class="card">
-      <div class="card-title">
-        <h2 id="cardTitle">Ladang 1</h2>
+    <div class="board-card">
+      <div class="board-title">
+        <h2 id="boardTitle">Kebun 1</h2>
+        <div class="goal-chip" id="goalChip">🥕 Antar Robo ke wortel</div>
       </div>
-      <p class="instr">Ketuk bunga kosong (bertanda ?), lalu pilih warna yang menurutmu sesuai pola.</p>
-
-      <div class="pattern-row" id="patternRow"></div>
-
-      <div class="palette-label">🎨 Pilih warna</div>
-      <div class="palette" id="palette"></div>
-
-      <div class="card-foot">
-        <button class="btn-check" id="btnCheck">✅ Periksa Pola</button>
-        <button class="btn-reset" id="btnReset">↺ Ulangi</button>
+      <div class="legend">
+        <span>🪨 Batu</span><span>🕳️ Lubang</span><span>🪵 Kayu</span><span>Robo tidak bisa lewat rintangan</span>
       </div>
+      <div class="board-wrap"><div id="board"></div></div>
+      <div class="board-foot">
+        <button class="btn-run" id="btnRun">▶ Jalankan</button>
+        <button class="btn-reset" id="btnResetRobo">↺ Ulang Posisi</button>
+      </div>
+    </div>
+
+    <div class="code-card">
+      <h2>🧩 Susun Kode Blok</h2>
+      <p class="sub">Atur arah hadap dulu (Turn), baru tekan Maju. Tekan Ulangi Program untuk mengulang seluruh langkah (loop).</p>
+      <div class="cmd-buttons">
+        <button class="cmd-btn turn" data-turn="up">⬆<span class="lbl">Turn Atas</span></button>
+        <button class="cmd-btn turn" data-turn="right">➡<span class="lbl">Turn Kanan</span></button>
+        <button class="cmd-btn turn" data-turn="down">⬇<span class="lbl">Turn Bawah</span></button>
+        <button class="cmd-btn turn" data-turn="left">⬅<span class="lbl">Turn Kiri</span></button>
+        <button class="cmd-btn turn" data-turn="up" style="visibility:hidden"></button>
+        <button class="cmd-btn turn" data-turn="up" style="visibility:hidden"></button>
+        <button class="cmd-btn move" id="btnMove">👣 Maju 1 Langkah</button>
+        <button class="cmd-btn repeat" id="btnRepeat">🔁 Ulangi Program (×2)</button>
+      </div>
+      <div class="program-label">
+        <span>📋 Program Robo</span>
+        <button id="btnClear">Kosongkan</button>
+      </div>
+      <div class="program-strip" id="programStrip"></div>
+      <div class="step-counter" id="stepCounter">0 blok</div>
       <div class="message" id="message"></div>
     </div>
   </div>
 
-  <div class="footnote">© 2026 DEE 4 MEREMBU • All Rights Reserved.</div>
+  <div class="footnote">© 2026 Dee 4 Merembu • All Rights Reserved</div>
 
 <script>
+  /* ===========================================================
+     LEVELS
+     grid: '.'=jalan, 'R'=batu, 'H'=lubang, 'L'=kayu (semua = rintangan)
+     start & goal: {r,c}
+     facing: arah hadap awal robot: 'up'|'down'|'left'|'right'
+
+     >>> Tambah level baru cukup dengan menambah 1 objek {...} baru
+         di array LEVELS ini, tidak perlu ubah kode lain. <<<
+     =========================================================== */
   const LEVELS = [
-    { name:'Ladang 1', sequence:['merah','kuning','merah','kuning','merah','kuning'], blanks:[5] },
-    { name:'Ladang 2', sequence:['biru','hijau','biru','hijau','biru','hijau','biru','hijau'], blanks:[6,7] },
-    { name:'Ladang 3', sequence:['merah','kuning','biru','merah','kuning','biru','merah','kuning','biru'], blanks:[8] },
-    { name:'Ladang 4', sequence:['ungu','oranye','hijau','ungu','oranye','hijau','ungu','oranye','hijau'], blanks:[7,8] },
-    { name:'Ladang 5', sequence:['merah','merah','kuning','merah','merah','kuning','merah','merah','kuning'], blanks:[7,8] },
-    { name:'Ladang 6', sequence:['biru','hijau','hijau','biru','hijau','hijau','biru','hijau','hijau'], blanks:[7,8] },
-    { name:'Ladang 7', sequence:['merah','kuning','biru','ungu','merah','kuning','biru','ungu'], blanks:[6,7] },
-    { name:'Ladang 8', sequence:['oranye','oranye','hijau','hijau','oranye','oranye','hijau','hijau'], blanks:[6,7] },
-    { name:'Ladang 9', sequence:['merah','biru','merah','kuning','merah','biru','merah','kuning','merah','biru','merah','kuning'], blanks:[4,7,10] },
-    { name:'Ladang 10', sequence:['ungu','hijau','oranye','hijau','biru','ungu','hijau','oranye','hijau','biru'], blanks:[4,6,8] }
+    {
+      name:'Kebun 1', rows:4, cols:4, facing:'right',
+      grid:[
+        '....',
+        '.R..',
+        '....',
+        '..L.'
+      ],
+      start:{r:0,c:0}, goal:{r:3,c:3}
+    },
+    {
+      name:'Kebun 2', rows:4, cols:5, facing:'down',
+      grid:[
+        '.....',
+        '.H...',
+        '...R.',
+        'L....'
+      ],
+      start:{r:0,c:0}, goal:{r:3,c:4}
+    },
+    {
+      name:'Kebun 3', rows:5, cols:5, facing:'right',
+      grid:[
+        '..R..',
+        '.H...',
+        '....L',
+        '..R..',
+        '.L...'
+      ],
+      start:{r:0,c:0}, goal:{r:4,c:4}
+    },
+    {
+      name:'Kebun 4', rows:5, cols:6, facing:'down',
+      grid:[
+        '......',
+        '.R..H.',
+        'L..R.R',
+        '......',
+        '....L.'
+      ],
+      start:{r:0,c:0}, goal:{r:4,c:5}
+    },
+    {
+      name:'Kebun 5', rows:5, cols:6, facing:'right',
+      grid:[
+        '...H.R',
+        '.....L',
+        '..R...',
+        'H.....',
+        '.L...H'
+      ],
+      start:{r:0,c:0}, goal:{r:4,c:5}
+    },
+    {
+      name:'Kebun 6', rows:6, cols:6, facing:'down',
+      grid:[
+        '......',
+        '..R...',
+        '.L.H..',
+        '...R..',
+        '....L.',
+        '....H.'
+      ],
+      start:{r:0,c:0}, goal:{r:5,c:5}
+    }
+
+    // ---- Contoh menambah level baru: cukup tempel objek di bawah ini ----
+    // ,{
+    //   name:'Kebun 7', rows:6, cols:6, facing:'right',
+    //   grid:[
+    //     '......',
+    //     '......',
+    //     '......',
+    //     '......',
+    //     '......',
+    //     '......'
+    //   ],
+    //   start:{r:0,c:0}, goal:{r:5,c:5}
+    // }
   ];
 
-  const COLOR_NAMES = { merah:'Merah', kuning:'Kuning', biru:'Biru', hijau:'Hijau', ungu:'Ungu', oranye:'Oranye' };
-  const ALL_COLORS = ['merah','kuning','biru','hijau','ungu','oranye'];
+  const DIR = {
+    up:{dr:-1,dc:0,icon:'⬆',label:'Atas'}, down:{dr:1,dc:0,icon:'⬇',label:'Bawah'},
+    left:{dr:0,dc:-1,icon:'⬅',label:'Kiri'}, right:{dr:0,dc:1,icon:'➡',label:'Kanan'}
+  };
+  const OBST_ICON = { R:'🪨', H:'🕳️', L:'🪵' };
+  const OBST_CLASS = { R:'obst-rock', H:'obst-hole', L:'obst-log' };
 
   let currentLevel = 0;
-  let answers = {};
-  let selectedBlank = null;
-  let solved = JSON.parse(localStorage.getItem('ladangpola_solved') || '[]');
+  let program = []; // {type:'turn', dir}  or {type:'move', count}
+  let running = false;
+  let solved = JSON.parse(localStorage.getItem('robokebun_blok_solved') || '[]');
 
-  const levelRowEl = document.getElementById('levelRow');
-  const cardTitleEl = document.getElementById('cardTitle');
-  const patternRowEl = document.getElementById('patternRow');
-  const paletteEl = document.getElementById('palette');
+  const boardEl = document.getElementById('board');
+  const programStripEl = document.getElementById('programStrip');
+  const stepCounterEl = document.getElementById('stepCounter');
   const messageEl = document.getElementById('message');
+  const boardTitleEl = document.getElementById('boardTitle');
+  const levelRowEl = document.getElementById('levelRow');
 
   function buildLevelPicker(){
     levelRowEl.innerHTML = '';
@@ -295,104 +454,216 @@
 
   function loadLevel(i){
     currentLevel = i;
-    answers = {};
-    selectedBlank = null;
+    program = [];
+    running = false;
     messageEl.className = 'message';
-    cardTitleEl.innerText = LEVELS[i].name;
+    boardTitleEl.innerText = LEVELS[i].name;
     buildLevelPicker();
-    renderPattern();
-    renderPalette();
+    renderBoard();
+    renderProgram();
   }
 
-  function renderPattern(){
+  function renderBoard(){
     const lvl = LEVELS[currentLevel];
-    patternRowEl.innerHTML = '';
-    lvl.sequence.forEach((color, idx) => {
-      const isBlank = lvl.blanks.includes(idx);
-      const el = document.createElement('div');
-      if (isBlank){
-        const chosen = answers[idx];
-        el.className = 'flower blank' + (chosen ? ' color-' + chosen : '') + (selectedBlank === idx ? ' selected' : '');
-        el.innerText = chosen ? '🌸' : '?';
-        if (chosen) el.classList.add('filled');
-        el.onclick = () => { selectedBlank = idx; renderPattern(); };
-      } else {
-        el.className = 'flower filled color-' + color;
-        el.innerText = '🌸';
-      }
-      patternRowEl.appendChild(el);
-    });
-  }
-
-  function renderPalette(){
-    paletteEl.innerHTML = '';
-    ALL_COLORS.forEach(color => {
-      const btn = document.createElement('button');
-      btn.className = 'swatch color-' + color;
-      btn.title = COLOR_NAMES[color];
-      btn.innerText = '🌸';
-      btn.onclick = () => {
-        if (selectedBlank === null){
-          showMessage('hint', 'Ketuk dulu bunga bertanda ? yang mau diisi ya!');
-          return;
+    const maxDim = Math.max(lvl.rows, lvl.cols);
+    const size = maxDim <= 5 ? 50 : (maxDim <= 7 ? 42 : 34);
+    boardEl.style.setProperty('--cell-size', size + 'px');
+    boardEl.style.gridTemplateColumns = `repeat(${lvl.cols}, var(--cell-size))`;
+    boardEl.innerHTML = '';
+    for (let r = 0; r < lvl.rows; r++){
+      for (let c = 0; c < lvl.cols; c++){
+        const ch = lvl.grid[r][c];
+        const isObst = ch !== '.';
+        const cell = document.createElement('div');
+        cell.className = 'cell ' + (isObst ? ('path ' + OBST_CLASS[ch]) : 'path');
+        cell.dataset.r = r; cell.dataset.c = c;
+        if (isObst){
+          cell.innerHTML = '<span>' + OBST_ICON[ch] + '</span>';
         }
-        answers[selectedBlank] = color;
-        const lvl = LEVELS[currentLevel];
-        const idxInBlanks = lvl.blanks.indexOf(selectedBlank);
-        const nextBlank = lvl.blanks[idxInBlanks + 1];
-        selectedBlank = (nextBlank !== undefined && !(nextBlank in answers)) ? nextBlank : null;
-        messageEl.className = 'message';
-        renderPattern();
-      };
-      paletteEl.appendChild(btn);
-    });
-  }
-
-  function showMessage(type, text){
-    messageEl.innerText = text;
-    messageEl.className = 'message show ' + type;
-  }
-
-  document.getElementById('btnCheck').onclick = () => {
-    const lvl = LEVELS[currentLevel];
-    const missing = lvl.blanks.some(idx => !(idx in answers));
-    if (missing){
-      showMessage('hint', 'Isi semua bunga kosong dulu sebelum diperiksa ya!');
-      return;
+        if (!isObst && r === lvl.goal.r && c === lvl.goal.c){
+          cell.innerHTML = '<span class="tile-goal">🥕</span>';
+        }
+        if (!isObst && r === lvl.start.r && c === lvl.start.c){
+          const robo = document.createElement('div');
+          robo.className = 'robot'; robo.id = 'robo';
+          robo.innerHTML = '🤖<span class="facing-badge" id="facingBadge">' + DIR[lvl.facing].icon + '</span>';
+          cell.appendChild(robo);
+        }
+        boardEl.appendChild(cell);
+      }
     }
-    let allCorrect = true;
-    lvl.blanks.forEach(idx => {
-      const el = patternRowEl.children[idx];
-      if (answers[idx] === lvl.sequence[idx]){
-        el.classList.remove('wrong');
+  }
+
+  function renderProgram(){
+    programStripEl.innerHTML = '';
+    if (program.length === 0){
+      const ph = document.createElement('div');
+      ph.className = 'placeholder';
+      ph.innerText = 'Belum ada blok. Pilih arah (Turn) lalu tekan Maju!';
+      programStripEl.appendChild(ph);
+    } else {
+      program.forEach((blk, idx) => {
+        const chip = document.createElement('div');
+        chip.id = 'chip-' + idx;
+        if (blk.type === 'turn'){
+          chip.className = 'chip turn';
+          chip.innerHTML = DIR[blk.dir].icon + ' Turn ' + DIR[blk.dir].label;
+        } else {
+          chip.className = 'chip move';
+          chip.innerHTML = '👣 Maju ×' + blk.count;
+        }
+        chip.onclick = () => { if (!running){ program.splice(idx, 1); renderProgram(); } };
+        programStripEl.appendChild(chip);
+      });
+    }
+    const totalSteps = program.reduce((s,b)=> s + (b.type==='move'?b.count:0), 0);
+    stepCounterEl.innerText = program.length + ' blok · ' + totalSteps + ' langkah maju';
+  }
+
+  document.querySelectorAll('[data-turn]').forEach(btn => {
+    if (btn.style.visibility === 'hidden') return;
+    btn.addEventListener('click', () => {
+      if (running) return;
+      program.push({ type:'turn', dir: btn.dataset.turn });
+      renderProgram();
+    });
+  });
+
+  document.getElementById('btnMove').onclick = () => {
+    if (running) return;
+    const last = program[program.length - 1];
+    if (last && last.type === 'move'){
+      last.count += 1;
+    } else {
+      program.push({ type:'move', count: 1 });
+    }
+    renderProgram();
+  };
+
+  document.getElementById('btnRepeat').onclick = () => {
+    if (running || program.length === 0) return;
+    const copy = program.map(b => ({...b}));
+    program = program.concat(copy);
+    renderProgram();
+  };
+
+  document.getElementById('btnClear').onclick = () => {
+    if (running) return;
+    program = [];
+    renderProgram();
+    messageEl.className = 'message';
+  };
+
+  document.getElementById('btnResetRobo').onclick = () => {
+    if (running) return;
+    renderBoard();
+    messageEl.className = 'message';
+  };
+
+  function sleep(ms){ return new Promise(res => setTimeout(res, ms)); }
+
+  function clearHighlights(){
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('trail', 'error'));
+  }
+
+  // pecah program jadi langkah-langkah atomik untuk dijalankan & disorot satu per satu
+  function flattenProgram(prog){
+    const steps = [];
+    prog.forEach((blk, idx) => {
+      if (blk.type === 'turn'){
+        steps.push({ chipIdx: idx, kind:'turn', dir: blk.dir });
       } else {
-        allCorrect = false;
-        el.classList.add('wrong');
+        for (let i = 0; i < blk.count; i++){
+          steps.push({ chipIdx: idx, kind:'move' });
+        }
       }
     });
-    if (allCorrect){
-      showMessage('win', '🎉 Tepat sekali! Pola bunganya benar semua!');
+    return steps;
+  }
+
+  document.getElementById('btnRun').onclick = async () => {
+    if (running || program.length === 0) return;
+    running = true;
+    clearHighlights();
+    messageEl.className = 'message';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.cmd-btn').forEach(b => b.disabled = true);
+
+    const lvl = LEVELS[currentLevel];
+    let pos = { r: lvl.start.r, c: lvl.start.c };
+    let facing = lvl.facing;
+    renderBoard();
+    const robo = document.getElementById('robo');
+    const badge = document.getElementById('facingBadge');
+
+    const steps = flattenProgram(program);
+
+    for (let i = 0; i < steps.length; i++){
+      const step = steps[i];
+      const chip = document.getElementById('chip-' + step.chipIdx);
+      if (chip) chip.classList.add('active');
+
+      if (step.kind === 'turn'){
+        facing = step.dir;
+        if (badge) badge.innerText = DIR[facing].icon;
+        await sleep(180);
+        if (chip) chip.classList.remove('active');
+        continue;
+      }
+
+      const d = DIR[facing];
+      const nr = pos.r + d.dr, nc = pos.c + d.dc;
+      const outOfBounds = nr < 0 || nc < 0 || nr >= lvl.rows || nc >= lvl.cols;
+      const hitObst = !outOfBounds && lvl.grid[nr][nc] !== '.';
+
+      if (outOfBounds || hitObst){
+        const cell = document.querySelector(`.cell[data-r="${pos.r}"][data-c="${pos.c}"]`);
+        if (cell) cell.classList.add('error');
+        if (robo) robo.style.transform = 'translateX(6px)';
+        await sleep(160);
+        if (robo) robo.style.transform = 'translateX(-6px)';
+        await sleep(160);
+        if (robo) robo.style.transform = '';
+        const alasan = outOfBounds ? 'keluar dari kebun' : 'menabrak ' + (lvl.grid[nr][nc]==='R'?'batu':lvl.grid[nr][nc]==='H'?'lubang':'kayu');
+        showMessage(false, 'Robo ' + alasan + '! Susun ulang arah & langkahnya ya. 🌿');
+        if (chip) chip.classList.remove('active');
+        running = false;
+        document.querySelectorAll('.cmd-btn').forEach(b => b.disabled = false);
+        return;
+      }
+
+      const oldCell = document.querySelector(`.cell[data-r="${pos.r}"][data-c="${pos.c}"]`);
+      oldCell.classList.add('trail');
+      pos = { r: nr, c: nc };
+      const newCell = document.querySelector(`.cell[data-r="${pos.r}"][data-c="${pos.c}"]`);
+      newCell.appendChild(robo);
+      await sleep(280);
+      if (chip) chip.classList.remove('active');
+    }
+
+    if (pos.r === lvl.goal.r && pos.c === lvl.goal.c){
+      showMessage(true, '🎉 Hebat! Robo sampai ke wortelnya!');
       if (!solved.includes(currentLevel)){
         solved.push(currentLevel);
-        localStorage.setItem('ladangpola_solved', JSON.stringify(solved));
+        localStorage.setItem('robokebun_blok_solved', JSON.stringify(solved));
         buildLevelPicker();
-        if (solved.length >= LEVELS.length) kirimSkorOtomatis('ladangpola', 20);
+        if (solved.length >= LEVELS.length) kirimSkorOtomatis('kodeblok', 20);
       }
       launchConfetti();
     } else {
-      showMessage('fail', 'Ada yang belum pas. Lihat lagi pola di sebelah kirinya ya!');
+      showMessage(false, 'Belum sampai ke wortel. Tambah blok lagi yuk!');
     }
+    running = false;
+    document.querySelectorAll('.cmd-btn').forEach(b => b.disabled = false);
   };
 
-  document.getElementById('btnReset').onclick = () => {
-    answers = {};
-    selectedBlank = null;
-    messageEl.className = 'message';
-    renderPattern();
-  };
+  function showMessage(win, text){
+    messageEl.innerText = text;
+    messageEl.className = 'message show ' + (win ? 'win' : 'fail');
+  }
 
   function launchConfetti(){
-    const colors = ['#e2555f', '#f4c548', '#4a9fc9', '#5ba64a', '#9b72cf', '#e88a3c'];
+    const colors = ['#5ba64a', '#ffc93c', '#d9713c', '#4a9fc9', '#d64550'];
     for (let i = 0; i < 60; i++){
       const c = document.createElement('div');
       c.className = 'confetti';
